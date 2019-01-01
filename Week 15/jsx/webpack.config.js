@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 module.exports = {
   entry: {
     main: './main.js',
-    animationTest: './animationTest.js'
+    // animationTest: './animationTest.js'
   },
   output: {
     filename: '[name].js',
