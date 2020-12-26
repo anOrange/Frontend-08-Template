@@ -13,6 +13,9 @@
       width: 20vw;
       flex: 0 0 20vw;
       height: 20vw;
+      font-size: 16vw;
+      text-align: center;
+      line-height: 20vw;
     }
   </style>
 </head>
@@ -24,23 +27,27 @@
 
   </div>
   <script>
-    const Pieces = Object.freeze({
-      Blank: '',
-      Circle: '⭕',
-      Cross: '❌'
-    })
+    // const Pieces = Object.freeze({
+    //   Blank: '',
+    //   Circle: '⭕',
+    //   Cross: '❌'
+    // })
+    const Pieces = {}
+    Pieces[Pieces['Blank'] = 0] = '';
+    Pieces[Pieces['Circle'] = 1] = '⭕';
+    Pieces[Pieces['Cross'] = 2] = '❌';
     const ROWMAX = 3;
     const COLMAX = 3;
     const BOARDSIZE = ROWMAX * COLMAX;
     function Game() {
-
+      this._active = Pieces.Circle; // 当前落子
     }
     Game.prototype.draw = function() {
       if (!this.pattern) {
         this.pattern = []
         for (let row = 0; row < ROWMAX; row++) {
           for(let col = 0; col < COLMAX; col++) {
-            this.pattern[rowCol2index(row, col)] = Pieces.Blank
+            this.pattern[rowCol2index(row, col)] = Pieces[Pieces.Blank]
           }
         }
       }
@@ -53,6 +60,15 @@
           let pieceDiv = document.createElement('div')
           pieceDiv.className = 'piece'
           this._pieceDivs[i] = pieceDiv;
+          pieceDiv.addEventListener('click', () => {
+            const innerHTML = pieceDiv.innerHTML;
+            console.log(innerHTML)
+            if (innerHTML) {
+              return;
+            }
+            pieceDiv.innerHTML = Pieces[this._active]
+            this._active = 3 - this._active
+          })
           gameBox.appendChild(pieceDiv)
         }
       }
