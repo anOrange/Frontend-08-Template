@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<head>
+  <title>week1</title>
+  <style type="text/css">
+    #gameBox {
+      display: flex;
+      width: 70vw;
+      flex-wrap: wrap;
+    }
+    .piece {
+      background: wheat;
+      border: 1px solid black;
+      width: 20vw;
+      flex: 0 0 20vw;
+      height: 20vw;
+    }
+  </style>
+</head>
+<body>
+  <div id="gameBox">
+
+  </div>
+  <div class="infomation">
+
+  </div>
+  <script>
+    const Pieces = Object.freeze({
+      Blank: '',
+      Circle: '⭕',
+      Cross: '❌'
+    })
+    const ROWMAX = 3;
+    const COLMAX = 3;
+    const BOARDSIZE = ROWMAX * COLMAX;
+    function Game() {
+
+    }
+    Game.prototype.draw = function() {
+      if (!this.pattern) {
+        this.pattern = []
+        for (let row = 0; row < ROWMAX; row++) {
+          for(let col = 0; col < COLMAX; col++) {
+            this.pattern[rowCol2index(row, col)] = Pieces.Blank
+          }
+        }
+      }
+      if (!this.gameBox || !this.gameBox.parentElement) {
+        let gameBox = document.getElementById('gameBox')
+        this._pieceDivs = []
+        this.gameBox = gameBox
+        gameBox.innerHTML = ''
+        for (let i = 0; i < BOARDSIZE; i++) {
+          let pieceDiv = document.createElement('div')
+          pieceDiv.className = 'piece'
+          this._pieceDivs[i] = pieceDiv;
+          gameBox.appendChild(pieceDiv)
+        }
+      }
+      for (let i = 0; i < BOARDSIZE; i++) {
+        this._pieceDivs[i].innerHTML = this.pattern[i]
+      }
+    }
+    function rowCol2index(row, col) {
+      return row * COLMAX + col
+    }
+    function index2row(index) {
+      return index / COLMAX >> 0
+    }
+    function index2col(index) {
+      return index % COLMAX
+    }
+    function index3rowCol(index) {
+      return [index2row(index), index2col(index)]
+    }
+    let gameIns = new Game()
+    gameIns.draw()
+  </script>
+  <script>
+    
+  </script>
+</body>
