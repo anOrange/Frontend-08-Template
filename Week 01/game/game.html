@@ -61,12 +61,21 @@
           pieceDiv.className = 'piece'
           this._pieceDivs[i] = pieceDiv;
           pieceDiv.addEventListener('click', () => {
+            if (this.hasWin) {
+              return;
+            }
             const innerHTML = pieceDiv.innerHTML;
-            console.log(innerHTML)
             if (innerHTML) {
               return;
             }
+            this.pattern[i] = this._active
             pieceDiv.innerHTML = Pieces[this._active]
+            let isWin = checkWin(this.pattern)
+            if (isWin) {
+              this.hasWin = true;
+              console.error(Pieces[isWin] + ' win')
+              return
+            }
             this._active = 3 - this._active
           })
           gameBox.appendChild(pieceDiv)
@@ -87,6 +96,35 @@
     }
     function index3rowCol(index) {
       return [index2row(index), index2col(index)]
+    }
+    /**
+     * 如果获胜，返回获胜的一方值
+     * */
+    function checkWin(pattern) {
+      for (let row = 0; row < ROWMAX; row++) {
+        let startI = row * COLMAX;
+        // 只支持 COLMAX 等于 3 的情况
+        if (pattern[startI] == pattern[startI + 1] && pattern[startI] == pattern[startI + 2]) {
+          if (pattern[startI]) {
+            return pattern[startI];
+          }
+        }
+      }
+      // 竖列
+      for (let col = 0; col < COLMAX; col++) {
+        if (pattern[col] == pattern[COLMAX + col] && pattern[col] == pattern[COLMAX * 2 + col]) {
+          if (pattern[col]) {
+            return pattern[col];
+          }
+        }
+      }
+      let midValue = pattern[COLMAX + 1];
+      if (midValue && midValue == pattern[COLMAX * 2 + 2] && midValue == pattern[0]) {
+        return midValue
+      }
+      if (midValue && midValue == pattern[2] && midValue == pattern[COLMAX * 2]) {
+        return midValue
+      }
     }
     let gameIns = new Game()
     gameIns.draw()
