@@ -4,9 +4,12 @@
   <style type="text/css">
     #gameBox {
       display: flex;
-      width: 70vw;
+      width: 80vw;
       flex-wrap: wrap;
+      /* background: red; */
+      position: relative;
     }
+    /* 格子 */
     .piece {
       background: wheat;
       border: 1px solid black;
@@ -17,6 +20,29 @@
       text-align: center;
       line-height: 20vw;
     }
+    .statusBox {
+      position: absolute;
+      right: 0;
+      top: 10px;
+      width: 15vw;
+      font-size: 20px;
+    }
+    .tipsBox {
+      position: absolute;
+      right: 0;
+      top: 50px;
+      width: 15vw;
+      font-size: 20px;
+    }
+    /* 重试按钮 */
+    .reset {
+      text-align: center;
+      width: 160px;
+      height: 40px;
+      font-size: 30px;
+      line-height: 40px;
+      border: 2px solid salmon;
+    }
   </style>
 </head>
 <body>
@@ -24,14 +50,9 @@
 
   </div>
   <div class="infomation">
-
+    <div class="reset" id="resetBtn">重新开始</div>
   </div>
   <script>
-    // const Pieces = Object.freeze({
-    //   Blank: '',
-    //   Circle: '⭕',
-    //   Cross: '❌'
-    // })
     const Pieces = {}
     Pieces[Pieces['Blank'] = 0] = '';
     Pieces[Pieces['Circle'] = 1] = '⭕';
@@ -39,7 +60,54 @@
     const ROWMAX = 3;
     const COLMAX = 3;
     const BOARDSIZE = ROWMAX * COLMAX;
-    function Game() {
+    function Game(gameDomId) {
+      this.gameDomId = gameDomId || 'gameBox'
+      let active = Pieces.Circle; // 当前落子
+      Object.defineProperty(this, '_active', {
+        set(v) {
+          active = v
+          this.statusText = `下一步: ${Pieces[v]} `
+        },
+        get() {
+          return active
+        }
+      })
+      let gameBox = document.getElementById(this.gameDomId)
+      if (!gameBox) {
+        gameBox = document.createElement('div')
+        gameBox.id = this.gameDomId;
+        document.body.appendChild(gameBox)
+      }
+      let _statusText = ''
+      let willWin = false
+      const statusDom = document.createElement('div')
+      statusDom.className = 'statusBox'
+      gameBox.appendChild(statusDom)
+      Object.defineProperty(this, 'statusText', {
+        set(v) {
+          _statusText = v
+          statusDom.innerText = v
+        },
+        get() {
+          return _statusText;
+        }
+      })
+      let tipsDom = document.createElement('div')
+      tipsDom.className = 'tipsBox'
+      gameBox.appendChild(tipsDom)
+      Object.defineProperty(this, 'willWin', {
+        set(v) {
+          if (willWin != v) {
+            console.log('willWin', v)
+            let pieces = Pieces[this._active]
+            tipsDom.innerHTML = v >= 0 ? `${pieces} 即将胜利` : ''
+          }
+          willWin = v
+        },
+        get() {
+          return willWin
+        }
+      })
       this._active = Pieces.Circle; // 当前落子
     }
     Game.prototype.draw = function() {
@@ -47,16 +115,21 @@
         this.pattern = []
         for (let row = 0; row < ROWMAX; row++) {
           for(let col = 0; col < COLMAX; col++) {
-            this.pattern[rowCol2index(row, col)] = Pieces[Pieces.Blank]
+            this.pattern[rowCol2index(row, col)] = Pieces.Blank
           }
         }
       }
       if (!this.gameBox || !this.gameBox.parentElement) {
-        let gameBox = document.getElementById('gameBox')
+        let gameBox = document.getElementById(this.gameDomId)
         this._pieceDivs = []
         this.gameBox = gameBox
-        gameBox.innerHTML = ''
-        for (let i = 0; i < BOARDSIZE; i++) {
+        let pieceCount = document.querySelectorAll('.piece').length
+        let initCount = 0;
+        if (pieceCount < BOARDSIZE) {
+          initCount = BOARDSIZE - pieceCount
+        }
+        // gameBox.innerHTML = ''
+        for (let i = 0; i < initCount; i++) {
           let pieceDiv = document.createElement('div')
           pieceDiv.className = 'piece'
           this._pieceDivs[i] = pieceDiv;
@@ -72,19 +145,39 @@
             pieceDiv.innerHTML = Pieces[this._active]
             let isWin = checkWin(this.pattern)
             if (isWin) {
-              this.hasWin = true;
-              console.error(Pieces[isWin] + ' win')
+              this.hasWin = isWin;
+              console.error(Pieces[this.pattern[isWin[0]]] + ' win')
+              this.draw()
               return
             }
             this._active = 3 - this._active
+            this.willWin = checkWillWin(this.pattern, this._active)
           })
           gameBox.appendChild(pieceDiv)
         }
       }
       for (let i = 0; i < BOARDSIZE; i++) {
-        this._pieceDivs[i].innerHTML = this.pattern[i]
+        this._pieceDivs[i].innerHTML = Pieces[this.pattern[i]]
+      }
+      if (this.hasWin) {
+        this.hasWin.forEach(i => {
+          console.log('hasWin', i)
+          this._pieceDivs[i].style.background = 'blue'
+        })
       }
     }
+    
+    Game.prototype.reset = function() {
+      let pattern = this.pattern || [];
+      for(let i = 0; i < pattern.length; i++ ) {
+        pattern[i] = Pieces.Blank;
+        this._pieceDivs[i].style.background = ''
+      }
+      this.willWin = -1
+      this.hasWin = null
+      this.draw()
+    }
+    
     function rowCol2index(row, col) {
       return row * COLMAX + col
     }
@@ -98,7 +191,7 @@
       return [index2row(index), index2col(index)]
     }
     /**
-     * 如果获胜，返回获胜的一方值
+     * 如果获胜，返回获胜的棋子序号，未获胜则返回NULL
      * */
     function checkWin(pattern) {
       for (let row = 0; row < ROWMAX; row++) {
@@ -106,7 +199,7 @@
         // 只支持 COLMAX 等于 3 的情况
         if (pattern[startI] == pattern[startI + 1] && pattern[startI] == pattern[startI + 2]) {
           if (pattern[startI]) {
-            return pattern[startI];
+            return [startI, startI + 1, startI + 2] //pattern[startI];
           }
         }
       }
@@ -114,20 +207,47 @@
       for (let col = 0; col < COLMAX; col++) {
         if (pattern[col] == pattern[COLMAX + col] && pattern[col] == pattern[COLMAX * 2 + col]) {
           if (pattern[col]) {
-            return pattern[col];
+            return [col, COLMAX + col, COLMAX * 2 + col]
           }
         }
       }
       let midValue = pattern[COLMAX + 1];
       if (midValue && midValue == pattern[COLMAX * 2 + 2] && midValue == pattern[0]) {
-        return midValue
+        return [0, COLMAX + 1, COLMAX * 2 + 2]
       }
       if (midValue && midValue == pattern[2] && midValue == pattern[COLMAX * 2]) {
-        return midValue
+        return [2, COLMAX + 1, COLMAX * 2]
       }
+      return null
     }
-    let gameIns = new Game()
-    gameIns.draw()
+    
+    /**
+     * 下一步胜负判断
+     * @param {Array<number>} pattern 棋盘
+     * @param {number} nextPiece 下一步的棋子类型值
+     * */
+    function checkWillWin(pattern, nextPiece) {
+      for(let i = 0; i < pattern.length; i++) {
+        let temp = Object.create(pattern) // [...pattern]
+        if (temp[i] === Pieces.Blank) {
+          temp[i] = nextPiece
+          if (checkWin(temp)) {
+            return i
+          }
+        }
+      }
+      return -1;
+    }
+    (function init() {
+      let gameIns = new Game()
+      gameIns.draw()
+
+      let resetBtn = document.getElementById('resetBtn')
+      resetBtn.addEventListener('click', () => {
+        gameIns.reset()
+      })
+    })()
+    
   </script>
   <script>
     
