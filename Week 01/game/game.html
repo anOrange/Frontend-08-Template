@@ -79,7 +79,6 @@
         document.body.appendChild(gameBox)
       }
       let _statusText = ''
-      let willWin = false
       const statusDom = document.createElement('div')
       statusDom.className = 'statusBox'
       gameBox.appendChild(statusDom)
@@ -95,17 +94,32 @@
       let tipsDom = document.createElement('div')
       tipsDom.className = 'tipsBox'
       gameBox.appendChild(tipsDom)
+      let _willWin = -1
       Object.defineProperty(this, 'willWin', {
         set(v) {
-          if (willWin != v) {
-            console.log('willWin', v)
+          if (_willWin != v) {
             let pieces = Pieces[this._active]
             tipsDom.innerHTML = v >= 0 ? `${pieces} 即将胜利` : ''
+            v >= 0 && console.error(index3rowCol(v))
           }
-          willWin = v
+          _willWin = v
         },
         get() {
-          return willWin
+          return _willWin
+        }
+      })
+      let _hasWin = null
+      Object.defineProperty(this, 'hasWin', {
+        set(v) {
+          if (v) {
+            v.forEach(i => {
+              this._pieceDivs[i].style.background = 'blue'
+            })
+          }
+          _hasWin = v
+        },
+        get() {
+          return _hasWin
         }
       })
       this._active = Pieces.Circle; // 当前落子
@@ -141,29 +155,17 @@
             if (innerHTML) {
               return;
             }
-            this.pattern[i] = this._active
-            pieceDiv.innerHTML = Pieces[this._active]
-            let isWin = checkWin(this.pattern)
-            if (isWin) {
-              this.hasWin = isWin;
-              console.error(Pieces[this.pattern[isWin[0]]] + ' win')
-              this.draw()
-              return
+            this.move(i)
+            let best = bestChoice(this.pattern, this._active)
+            if (best.index > -1) { // AI 下棋
+              this.move(best.index)
             }
-            this._active = 3 - this._active
-            this.willWin = checkWillWin(this.pattern, this._active)
           })
           gameBox.appendChild(pieceDiv)
         }
       }
       for (let i = 0; i < BOARDSIZE; i++) {
         this._pieceDivs[i].innerHTML = Pieces[this.pattern[i]]
-      }
-      if (this.hasWin) {
-        this.hasWin.forEach(i => {
-          console.log('hasWin', i)
-          this._pieceDivs[i].style.background = 'blue'
-        })
       }
     }
     
@@ -178,6 +180,24 @@
       this.draw()
     }
     
+    // 落子
+    Game.prototype.move = function(i) {
+      const [row, col] = index3rowCol(i)
+      const pattern = this.pattern;
+      pattern[i] = this._active
+      const pieceDiv = this._pieceDivs[i]
+      pieceDiv.innerHTML = Pieces[this._active]
+      let isWin = checkWin(this.pattern)
+      if (isWin) {
+        this.hasWin = isWin;
+        console.error(Pieces[this.pattern[isWin[0]]] + ' win')
+        this.draw()
+        return
+      }
+      this._active = 3 - this._active
+      this.willWin = checkWillWin(this.pattern, this._active)
+    }
+
     function rowCol2index(row, col) {
       return row * COLMAX + col
     }
@@ -237,6 +257,41 @@
         }
       }
       return -1;
+    }
+
+    function bestChoice(pattern, nextPiece) {
+      let index = checkWillWin(pattern, nextPiece)
+      if (index >= 0) {
+        return {
+          index,
+          result: 1
+        }
+      }
+      let result = -2
+      let point
+      for (let i = 0; i < BOARDSIZE; i++) {
+        if (pattern[i]) {
+          continue;
+        }
+        let tmp = Object.create(pattern)
+        tmp[i] = nextPiece
+        let r = bestChoice(tmp, 3 - nextPiece).result
+        if (-r > result) {
+          result = -r
+          index = i
+        }
+      }
+      return {
+        index,
+        result: index >= 0? result: 0
+      }
+    }
+
+    function computerNext(pattern, nextPiece) {
+      let res = bestChoice(pattern, nextPiece)
+      if (res.index >= 0) {
+
+      }
     }
     (function init() {
       let gameIns = new Game()
