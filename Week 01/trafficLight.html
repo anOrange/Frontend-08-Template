@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>红绿灯</title>
+    <style type="text/css">
+      .light {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: gray;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="light"></div>
+    <div class="light"></div>
+    <div class="light"></div>
+    <script>
+      function sleep(timeout) {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve()
+          }, timeout);
+        })
+      }
+      async function go() {
+        let lights = document.querySelectorAll('.light')
+        const clear = () => {
+          lights.forEach( dom => {
+            dom.style.background = ''
+          })
+        }
+        while(true) {
+          console.log(lights)
+          clear()
+          lights[0].style.background = 'green'
+          await sleep(2000)
+          clear()
+          lights[1].style.background = 'yellow'
+          await sleep(500)
+          clear()
+          lights[2].style.background = 'red'
+          await sleep(1000)
+        }
+      }
+      window.onload = function() {
+        go()
+      }
+    </script>
+  </body>
+</html>
