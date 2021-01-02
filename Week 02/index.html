@@ -27,6 +27,51 @@
       const kXLTableCacheKey = 'kXLTableCacheKey'
       loadMap(table)
       listeners(map, table)
+
+      async function findPath(start, end) {
+        let queue = [start]
+        while(queue.length) {
+          let curPoi = queue.shift()
+          let [x, y] = curPoi
+          if (x == end[0] && y == end[1]) {
+            while(x != start[0] || y != start[1]) {
+              await sleep(30)
+              map.children[x * 100 + y].style.backgroundColor = 'red';
+              [x, y] = table[x * 100 + y]
+            }
+            map.children[x * 100 + y].style.backgroundColor = 'red';
+            return true
+          }
+          
+          await insert(queue, x - 1, y, curPoi)
+          await insert(queue, x + 1, y, curPoi)
+          await insert(queue, x, y - 1, curPoi)
+          await insert(queue, x, y + 1, curPoi)
+
+        }
+      }
+
+      async function insert(queue, x, y, pre) {
+        if (x < 0 || x > 99 || y < 0 || y > 99) {
+          return
+        }
+        if (table[x * 100 + y]) {
+          return
+        }
+        // await sleep(30)
+        queue.push([x, y])
+        table[x * 100 + y] = pre
+        map.children[x * 100 + y].style.backgroundColor = 'green'
+      }
+
+      function sleep(timeout) {
+        return new Promise(resolve => {
+          setTimeout(() => {
+            resolve()
+          }, timeout);
+        })
+      }
+
       // 点击保存事件
       function onSaveBtnClick() {
         saveMap(table)
@@ -104,8 +149,6 @@
       function saveMap(table) {
         let data = new Uint8Array(1250)
         for (let i = 0; i < 10000; i++) {
-          // table[i]
-          table[i] && console.log(`i=${i} idx: ${i/8 >> 0}, ${1 << (i % 8)}`)
           data[i/8 >> 0] = data[i/8 >> 0] | (table[i] ? 1 << (i % 8)  : 0);
         }
         let arr = [...data]
