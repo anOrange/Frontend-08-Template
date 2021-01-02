@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>寻路</title>
+    <style type="text/css">
+      #map {
+        width: 700px;
+        height: 700px;
+        display: flex;
+        flex-wrap: wrap;
+      }
+      .block {
+        width: 5px;
+        height: 5px;
+        background: #CCC;
+        border: 1px seashell solid;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <button onclick="onSaveBtnClick()">保存</button>
+    <button onclick="onClearClick()">清空</button>
+    <script>
+      const map = document.getElementById('map')
+      const table = Array(10000).fill(0);
+      const kXLTableCacheKey = 'kXLTableCacheKey'
+      loadMap(table)
+      listeners(map, table)
+      // 点击保存事件
+      function onSaveBtnClick() {
+        saveMap(table)
+      }
+      // 清空地图
+      function onClearClick() {
+        clearMap(map, table)
+      }
+      // 鼠标监听事件
+      function listeners(map, table) {
+        let mouseDown = false;
+        let isClear = 0;
+        map.addEventListener('mousemove', (e) => {
+          // console.log(e)
+          let target = e.target;
+          let dataset = target.dataset;
+          if (dataset.type == 1 && mouseDown) {
+            let x = +dataset.x
+            let y = +dataset.y
+            table[x * 100 + y] = 1
+            target.style.backgroundColor = 'black'
+          }
+        })
+        map.addEventListener('mousedown', (e) => {
+          mouseDown = true;
+          isClear = e.which == 3 ? true : false
+        })
+        map.addEventListener('mouseup', (e) => {
+          mouseDown = false
+        })
+        map.addEventListener('contextmenu', e => e.preventDefault())
+      }
+      // 地图初始化
+      for (let i = 0; i < 100; i++) {
+        for (let j = 0; j < 100; j++) {
+          let block = document.createElement('div')
+          block.className = 'block'
+          block.style.backgroundColor = table[i * 100 + j] ? 'black' : '';
+          block.dataset.type = 1
+          block.dataset.x = i
+          block.dataset.y = j
+          block.addEventListener('mousemove', () => {
+            // if ()
+          })
+          map.appendChild(block)
+        }
+      }
+
+      function clearMap(map, table) {
+        for(let i = 0; i < 10000; i++) {
+          map.children[i].style.backgroundColor = ''
+          table[i] = 0
+        }
+      }
+      // 加载地图
+      function loadMap(table) {
+        let cache = localStorage.getItem(kXLTableCacheKey)
+        if (cache) {
+          for (let i = 0; i < cache.length; i++) {
+            let code = cache.codePointAt(i)
+            let startI = i * 8;
+            table[startI] = code & 1;
+            table[startI + 1] = code & (1 << 1);
+            table[startI + 2] = code & (1 << 2);
+            table[startI + 3] = code & (1 << 3);
+            table[startI + 4] = code & (1 << 4);
+            table[startI + 5] = code & (1 << 5);
+            table[startI + 6] = code & (1 << 6);
+            table[startI + 7] = code & (1 << 7);
+          }
+        }
+      }
+
+      // 保存地图
+      function saveMap(table) {
+        let data = new Uint8Array(1250)
+        for (let i = 0; i < 10000; i++) {
+          // table[i]
+          table[i] && console.log(`i=${i} idx: ${i/8 >> 0}, ${1 << (i % 8)}`)
+          data[i/8 >> 0] = data[i/8 >> 0] | (table[i] ? 1 << (i % 8)  : 0);
+        }
+        let arr = [...data]
+        localStorage.setItem(kXLTableCacheKey, String.fromCodePoint(...arr))
+      }
+
+    </script>
+  </body>
+</html>
