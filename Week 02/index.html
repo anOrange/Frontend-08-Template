@@ -28,10 +28,111 @@
       loadMap(table)
       listeners(map, table)
 
+      class Sorted {
+        constructor(data, compare) {
+          this.data = data || []
+          this.compare = compare || ((a, b) => a - b)
+        }
+
+        take() {
+          if (!this.data.length) {
+            return
+          } else if (this.data.length == 1) {
+            return this.data.pop()
+          }
+          let ret = this.data[0]
+          this.data[0] = this.data.pop()
+          this.heapify(0)
+          return ret
+        }
+
+        get length() {
+          return this.data.length
+        }
+
+        give(value) {
+          let i = this.data.length
+          this.data[i] = value
+          let parent = this._parent(i)
+          while (parent >= 0 && this.compare(this.data[i], this.data[parent]) < 0) { 
+            let temp = this.data[i]
+            this.data[i] = this.data[parent]
+            this.data[parent] = temp
+            i = parent;
+            parent = this._parent(i)
+          }
+        }
+
+        heapify(i) {
+          let value = this.data[i]
+          while(true) {
+            let l = this._leftChild(i)
+            let r = this._rightChild(i)
+
+            let maxPos = i;
+            if (l >= 0 && this.compare(this.data[l], value) < 0) {
+              maxPos = l
+            }
+            if (r >= 0 && this.compare(this.data[r], this.data[maxPos]) < 0) {
+              maxPos = r;
+            } 
+            if (maxPos == i) {
+              break;
+            }
+            this.data[i] = this.data[maxPos]
+            this.data[maxPos] = value
+            i = maxPos
+          }
+        }
+
+        _leftChild(i) {
+          let left = 2 * i + 1;
+          if(left >= this.data.length) {
+            return -1;
+          }
+          return left;
+        }
+
+        _rightChild(i) {
+          let right = 2 * i + 2;
+          if(right >= this.data.length) {
+            return -1;
+          }
+          return right;
+        }
+
+        _parent(i) {
+          if (i == 0) {
+            return -1
+          }
+          return (i / 2) >> 0
+        }
+      }
+
+      console.log('kkkk')
+      let aaa = new Sorted([5])
+      aaa.give(4)
+      aaa.give(14)
+      aaa.give(8)
+      aaa.give(21)
+      aaa.give(1)
+      aaa.give(11)
+      while(aaa.data.length) {
+        console.log('take', aaa.take())
+      }
+
       async function findPath(start, end) {
-        let queue = [start]
+        // let queue = [start]
+        const [endX, endY] = end
+        let queue = new Sorted([start], (point1, point2) => {
+          let [x1, y1] = point1
+          let [x2, y2] = point2
+          console.log(point1, point2)
+          return ((x1 - endX) ** 2 + (y1 - endY) ** 2) - ((x2 - endX) ** 2 + (y2 - endY) ** 2)
+        });
         while(queue.length) {
-          let curPoi = queue.shift()
+          // let curPoi = queue.shift()
+          let curPoi = queue.take()
           let [x, y] = curPoi
           if (x == end[0] && y == end[1]) {
             while(x != start[0] || y != start[1]) {
@@ -58,8 +159,9 @@
         if (table[x * 100 + y]) {
           return
         }
-        // await sleep(30)
-        queue.push([x, y])
+        await sleep(30)
+        // queue.push([x, y])
+        queue.give([x, y])
         table[x * 100 + y] = pre
         map.children[x * 100 + y].style.backgroundColor = 'green'
       }
@@ -113,9 +215,6 @@
           block.dataset.type = 1
           block.dataset.x = i
           block.dataset.y = j
-          block.addEventListener('mousemove', () => {
-            // if ()
-          })
           map.appendChild(block)
         }
       }
