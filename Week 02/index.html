@@ -124,6 +124,11 @@
       async function findPath(start, end) {
         // let queue = [start]
         const [endX, endY] = end
+        let endColor = 'red'
+        let interval = setInterval(() => {
+          endColor = endColor == 'red' ? 'blue' :'red';
+          map.children[endX * 100 + endY].style.backgroundColor = endColor;
+        }, 200);
         let queue = new Sorted([start], (point1, point2) => {
           let [x1, y1] = point1
           let [x2, y2] = point2
@@ -141,6 +146,7 @@
               [x, y] = table[x * 100 + y]
             }
             map.children[x * 100 + y].style.backgroundColor = 'red';
+            clearInterval(interval)
             return true
           }
           
@@ -149,7 +155,13 @@
           await insert(queue, x, y - 1, curPoi)
           await insert(queue, x, y + 1, curPoi)
 
+          await insert(queue, x - 1, y - 1, curPoi)
+          await insert(queue, x + 1, y + 1, curPoi)
+          await insert(queue, x + 1, y - 1, curPoi)
+          await insert(queue, x - 1, y + 1, curPoi)
+
         }
+        clearInterval(interval)
       }
 
       async function insert(queue, x, y, pre) {
