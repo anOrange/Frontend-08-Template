@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>词法语法分析</title>
+    <style type="text/css">
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <input placeholder="请输入四则运算表达式"/>
+    </div>
+    <script>
+      class Parser {
+        constructor(code) {
+
+        }
+      }
+
+      let code = '12 + 3.4 * .5 + 2.'
+      // type 匹配表
+      const table = [
+        { 
+          type: '('
+        }, // 40
+        { 
+          type: ')'
+        },
+        {
+          type: '*'
+        },
+        {
+          type: '+'
+        },
+        '',
+        {
+          type: '-'
+        },
+        '',
+        {
+          type: '/'
+        }, // 47
+      ]
+      // 非正则表达式的进行词法分析
+      function * tokenize() {
+        let tokens = []
+        for (let i = 0; i < code.length;) {
+          let charCode = code.charCodeAt(i)
+          let type = 'unknown';
+          let value = ''
+          if (table[charCode - 40]) {
+            // 匹配运算符和括号
+            i++
+            let res = {
+              ...table[charCode - 40]
+            }
+            yield res
+            continue
+          } else if (code[i] == '.' || charCode >= 48 && charCode <= 57) {
+            // 匹配数字，数字间不支持空格
+            let arr = []
+            let dotCount = 0 // '.' 的数量
+            type = 'Number'
+            do {
+              arr.push(code[i])
+              if (code[i] == '.') {
+                dotCount++
+              }
+              if (dotCount > 1) {
+                throw new Error('数值错误')
+              }
+              i++
+              charCode = code.charCodeAt(i)
+            } while (code[i] == '.' || charCode >= 48 && charCode <= 57) 
+            value = arr.join('')
+            let res = {
+              type,
+              value
+            }
+            yield res
+          } else if (charCode >= 9 && charCode <= 13 || charCode == 32) {
+            // 空格或换行
+            let res = {
+              type: 'Whitespace',
+              value: code[i]
+            }
+            i++
+            yield res
+          }
+        }
+      }
+      for (let token of tokenize(code)) {
+        console.log(token)
+      }
+
+      // const dictionary = ['Number', 'Whitespace', 'LineTerminator']
+    </script>
+  </body>
+</html>
