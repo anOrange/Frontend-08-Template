@@ -20,10 +20,11 @@
             if (token.type != 'Whitespace') {
               tokens.push(token)
             }
-            // console.log(token)            
+            // console.log(token)
           }
           let ast = AdditiveExpress(tokens)
           console.log(ast)
+          return ast
         }
       }
       
