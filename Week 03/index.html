@@ -12,11 +12,21 @@
     <script>
       class Parser {
         constructor(code) {
-
+          this.code = code
+        }
+        Parser() {
+          let tokens = []
+          for (let token of tokenize(code)) {
+            if (token.type != 'Whitespace') {
+              tokens.push(token)
+            }
+            // console.log(token)            
+          }
+          let ast = AdditiveExpress(tokens)
+          console.log(ast)
         }
       }
-
-      let code = '12 + 3.4 * .5 + 2.'
+      
       // type 匹配表
       const table = [
         { 
@@ -39,7 +49,8 @@
         {
           type: '/'
         }, // 47
-      ]
+      ];
+      
       // 非正则表达式的进行词法分析
       function * tokenize() {
         let tokens = []
@@ -87,12 +98,105 @@
             yield res
           }
         }
-      }
-      for (let token of tokenize(code)) {
-        console.log(token)
+        // let eof = {
+        //   type: 'EOF'
+        // }
+        // yield eof
       }
 
-      // const dictionary = ['Number', 'Whitespace', 'LineTerminator']
+      function express(tokens) {
+        if (tokens[0].type === '(') {
+          express(s)
+        }
+      }
+
+      function AdditiveExpress(tokens) {
+        if (tokens[0].type === 'MultiplicativeExpress') {
+          let node = {
+            type: 'AdditiveExpress',
+            children: [tokens[0]]
+          }
+          tokens[0] = node
+          return AdditiveExpress(tokens)
+        }
+        if (tokens[0].type == 'AdditiveExpress' && tokens[1] && tokens[1].type === '+') {
+          let node = {
+            type: 'AdditiveExpress',
+            operator: '+',
+            children: []
+          }
+          node.children.push(tokens.shift())
+          node.children.push(tokens.shift())
+          MultiplicativeExpress(tokens)
+          node.children.push(tokens.shift())
+          tokens.unshift(node)
+          return AdditiveExpress(tokens)
+        }
+        if (tokens[0].type == 'AdditiveExpress' && tokens[1] && tokens[1].type === '-') {
+          let node = {
+            type: 'AdditiveExpress',
+            operator: '-',
+            children: []
+          }
+          node.children.push(tokens.shift())
+          node.children.push(tokens.shift())
+          MultiplicativeExpress(tokens)
+          node.children.push(tokens.shift())
+          tokens.unshift(node)
+          return AdditiveExpress(tokens)
+        }
+        if (tokens[0].type === 'AdditiveExpress') {
+          return tokens[0]
+        }
+        MultiplicativeExpress(tokens)
+        return AdditiveExpress(tokens)
+      }
+
+      // 乘除
+      function MultiplicativeExpress(tokens) {
+        if (tokens[0].type == 'Number') {
+          let node = {
+            type: 'MultiplicativeExpress',
+            children: tokens[0]
+          }
+          tokens[0] = node
+          return MultiplicativeExpress(tokens)
+        }
+        if (tokens[0].type == 'MultiplicativeExpress' && tokens[1] && tokens[1].type === '*') {
+          let node = {
+            type: 'MultiplicativeExpress',
+            operator: '*',
+            children: []
+          }
+          node.children.push(tokens.shift())
+          node.children.push(tokens.shift())
+          node.children.push(tokens.shift())
+          tokens.unshift(node)
+          return MultiplicativeExpress(tokens)
+        }
+        if (tokens[0].type == 'MultiplicativeExpress' && tokens[1] && tokens[1].type === '/') {
+          let node = {
+            type: 'MultiplicativeExpress',
+            operator: '/',
+            children: []
+          }
+          node.children.push(tokens.shift())
+          node.children.push(tokens.shift())
+          node.children.push(tokens.shift())
+          tokens.unshift(node)
+          return MultiplicativeExpress(tokens)
+        }
+        if (tokens[0].type === 'MultiplicativeExpress') {
+          return tokens[0]
+        }
+        return MultiplicativeExpress(tokens)
+      }
+
+      let code = '12 + 3.4 * .5 + 2.'
+
+      const parser = new Parser(code)
+      parser.Parser()
+      
     </script>
   </body>
 </html>
