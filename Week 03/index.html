@@ -16,12 +16,13 @@
         }
         Parser() {
           let tokens = []
+          // 词法分析
           for (let token of tokenize(code)) {
             if (token.type != 'Whitespace') {
               tokens.push(token)
             }
-            // console.log(token)
           }
+          // 语法分析
           let ast = AdditiveExpress(tokens)
           console.log(ast)
           return ast
