@@ -1,5 +1,5 @@
 
-const EmptySymbol = Symbol('$')
+const CountSymbol = Symbol('$')
 const ParentSymbol = Symbol('parent')
 const CharSymbol = Symbol('character')
 
@@ -9,6 +9,7 @@ class Trie {
     this.table = Object.create(null)
   }
 
+  // 插入
   insert(word) {
     let node = this.table
     for (let c of word) {
@@ -19,18 +20,18 @@ class Trie {
       }
       node = node[c]
     }
-    if (!(EmptySymbol in node)) {
-      node[EmptySymbol] = 0
+    if (!(CountSymbol in node)) {
+      node[CountSymbol] = 0
     }
-    node[EmptySymbol]++
+    node[CountSymbol]++
   }
 
   most() {
     let max = 0
     let maxNode = null
     const vistit = (node) => {
-      if (node[EmptySymbol] && node[EmptySymbol] > max) {
-        max = node[EmptySymbol];
+      if (node[CountSymbol] && node[CountSymbol] > max) {
+        max = node[CountSymbol];
         maxNode = node
       }
       for (let p in node) {
@@ -38,17 +39,30 @@ class Trie {
       }
     }
     vistit(this.table)
-    let maxWord = []
+    let maxWordArr = []
     let node = maxNode
     while(node && node[ParentSymbol]) {
-      maxWord.push(node[CharSymbol])
+      maxWordArr.push(node[CharSymbol])
       node = node[ParentSymbol]
     }
-    console.log('max', max, maxWord.reverse().join(''))
+    
+    let maxWord = maxWordArr.reverse().join('')
+    console.log('max', max, maxWord)
     return {
       maxLen: max,
-      maxWord: maxWord.reverse().join('')
+      maxWord: maxWord
     }
+  }
+
+  search(word) {
+    let node = this.table
+    for (let c of word) {
+      if (!node[c]) {
+        return null
+      }
+      node = node[c]
+    }
+    return node[CountSymbol] || null
   }
 }
 
@@ -67,5 +81,12 @@ for (let i = 0; i < 100000; i++) {
   trie.insert(randomWord(4))
 }
 
-trie.most()
+// 最多的
+let most = trie.most()
+console.log('most', most)
+// 查找字符串
+let serchResult = trie.search(most.maxWord)
+console.log(`查找 ${most.maxWord} 个数: `,serchResult)
+serchResult = trie.search('abc')
+console.log(`查找 abc 个数: `,serchResult)
 
