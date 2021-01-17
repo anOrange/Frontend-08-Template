@@ -106,10 +106,25 @@
         // yield eof
       }
 
-      function express(tokens) {
+      // function Express(tokens) {
+      //   if (tokens[0].type === '(') {
+      //     Express(s)
+      //   }
+      // }
+
+      function BracketExpress(tokens) {
         if (tokens[0].type === '(') {
-          express(s)
+          let node = {
+            type: 'BracketExpress',
+            children: []
+          }
+          tokens[0] = node
+          if (token[1].type !== '(') {
+            
+          }
+          return AdditiveExpress(tokens)
         }
+        return AdditiveExpress(tokens)
       }
 
       function AdditiveExpress(tokens) {
