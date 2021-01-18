@@ -103,8 +103,8 @@
           // 判断匹配完成
           if (indexs.j === pattern.length - 1) {
             return {
-              start: indexs.i - indexs.j + 1,
-              end: indexs.i + 1
+              start: indexs.i - indexs.j,
+              end: indexs.i
             };
           }
           if (pattern[indexs.j] == source[indexs.i] || pattern[indexs.j] === '?') {
