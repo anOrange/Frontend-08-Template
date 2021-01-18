@@ -9,11 +9,11 @@ function kmp (source, pattern) {
   // 查找主流程
   let j = 0;
   for (let i = 0; i < source.length; i++) {
-    if (pattern[j] != source[i]) {
+    if (pattern[j] !== source[i] && pattern[j] !== '?') {
       while (true) {
         j = nexts[j - 1]
         if (j > 0) {
-          if (pattern[j] == source[i]) {
+          if (pattern[j] === source[i] || pattern[j] === '?') {
             break
           } else {
             // 没匹配上，继续往下匹配
@@ -44,7 +44,7 @@ function getNexts(pattern) {
   let j = 0; // 模式串匹配的下标
   let i = 1;
   while (i < pattern.length) {
-    if (pattern[i] == pattern[j]) {
+    if (pattern[i] === pattern[j] || pattern[j] === '?') {
       nexts[i] = j + 1
       i++
       j++
@@ -62,6 +62,7 @@ function getNexts(pattern) {
 
 let pattern = 'afafieflaf'
 pattern = 'aabaaac'
+pattern = 'aab?aac'
 let nexts = getNexts(pattern)
 console.log(nexts)
 

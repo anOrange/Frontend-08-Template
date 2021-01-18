@@ -82,13 +82,13 @@
         indexs.j = 0;
         for (indexs.i = 0; indexs.i < source.length; indexs.i++) {
           await sleep(600)
-          if (pattern[indexs.j] != source[indexs.i]) {
+          if (pattern[indexs.j] != source[indexs.i] && pattern[indexs.j] != '?') {
             while (true) {
               // j = nexts[j - 1]
               let j = await nextor.get(indexs.j - 1)
               if (j > 0) {
                 indexs.j = j
-                if (pattern[indexs.j] == source[indexs.i]) {
+                if (pattern[indexs.j] == source[indexs.i] || pattern[indexs.j] === '?') {
                   break
                 } else {
                   // 没匹配上，继续往下匹配
@@ -107,7 +107,7 @@
               end: indexs.i + 1
             };
           }
-          if (pattern[indexs.j] == source[indexs.i]) {
+          if (pattern[indexs.j] == source[indexs.i] || pattern[indexs.j] === '?') {
             // 模式串增加一位
             indexs.j++
           }
@@ -121,6 +121,7 @@
         let tableEle = document.getElementById('table')
         let j = 0; // 模式串匹配的下标
         let i = 1;
+        /* 动画开始 */
         let indexs = new Proxy({
           j: 0,
           i: 1
@@ -148,6 +149,7 @@
             return target[prop]
           }
         })
+        /* 动画结束 */
         class Nextor {
           constructor() {
             this.nexts = nexts
@@ -189,7 +191,7 @@
         let nextor = new Nextor()
         while (indexs.i < pattern.length) {
           await sleep(500)
-          if (pattern[indexs.i] == pattern[indexs.j]) {
+          if (pattern[indexs.i] == pattern[indexs.j] || pattern[indexs.j] === '?') {
             await nextor.set(indexs.i, indexs.j + 1, true)
             indexs.i++
             indexs.j++
@@ -208,6 +210,7 @@
 
       let pattern = 'afafieflaf'
       pattern = 'aabaaac';
+      pattern = 'aab?aac';
       (async function () {
         // let nexts = await getNexts(pattern)
         // console.log(nexts)
