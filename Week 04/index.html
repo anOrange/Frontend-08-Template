@@ -6,6 +6,12 @@
       .df {
         display: flex;
       }
+      .alphabetDiv {
+        width: 30px;
+        /* height: 30px; */
+        border: 2px white solid;
+        text-align: center;
+      }
     </style>
   </head>
   <body>
@@ -13,9 +19,9 @@
 
     </div>
     <hr />
-    <div id="source">
+    <div id="source" class="df">
     </div>
-    <div id="pattern">
+    <div id="pattern" class="df">
     </div>
     <script>
 
@@ -26,60 +32,130 @@
         }
 
         let sourceEle = document.getElementById('source')
-        sourceEle.innerHTML = source
+        sourceEle.innerHTML = ''
+        for (let c of source) {
+          let div = document.createElement('div')
+          div.className = 'alphabetDiv'
+          div.innerHTML = `
+            <div>${c}</div>
+          `
+          sourceEle.appendChild(div)
+        }
         let patternEle = document.getElementById('pattern')
-        patternEle.innerHTML = pattern
+        patternEle.innerHTML = ''
+        for (let c of pattern) {
+          let div = document.createElement('div')
+          div.className = 'alphabetDiv'
+          div.innerHTML = `
+            <div>${c}</div>
+          `
+          patternEle.appendChild(div)
+        }
+
+        let indexs = new Proxy({
+          j: 0,
+          i: 0
+        }, {
+          set(target, prop, val) {
+            target[prop] = val || 0
+            let padCount = target.i - target.j
+            patternEle.style.paddingLeft = `${padCount * 34}px`
+            for (let i = 0; i < pattern.length; i++) {
+              patternEle.children[i].style.background = i <= target.j ? 'red' : ''
+            }
+            for (let i = 0; i < source.length; i++) {
+              let color = ''
+              if (i <= target.i && i >= target.i - target.j) {
+                color = 'red'
+              }
+              sourceEle.children[i].style.background = color
+            }
+          },
+          get(target, prop) {
+            return target[prop]
+          }
+        })
         // 建立 pattern 移动表
         // let nexts = getNexts(pattern)
         let nextor = await getNexts(pattern)
         // 查找主流程
-        let j = 0;
-        for (let i = 0; i < source.length; i++) {
-          if (pattern[j] != source[i]) {
+        indexs.j = 0;
+        for (indexs.i = 0; indexs.i < source.length; indexs.i++) {
+          await sleep(600)
+          if (pattern[indexs.j] != source[indexs.i]) {
             while (true) {
               // j = nexts[j - 1]
-              j = await nextor.get(j - 1)
+              let j = await nextor.get(indexs.j - 1)
               if (j > 0) {
-                if (pattern[j] == source[i]) {
+                indexs.j = j
+                if (pattern[indexs.j] == source[indexs.i]) {
                   break
                 } else {
                   // 没匹配上，继续往下匹配
                 }
               } else {
-                j = 0
+                indexs.j = 0
                 break;
               }
             }
-          } else {
-            // 模式串增加一位
-            j++
           }
 
           // 判断匹配完成
-          if (j === pattern.length - 1) {
+          if (indexs.j === pattern.length - 1) {
             return {
-              start: i - j + 1,
-              end: i + 1
+              start: indexs.i - indexs.j + 1,
+              end: indexs.i + 1
             };
+          }
+          if (pattern[indexs.j] == source[indexs.i]) {
+            // 模式串增加一位
+            indexs.j++
           }
         }
         return null
       }
 
-
       const GetColor = 'red'
       async function getNexts(pattern) {
         let nexts = new Array(pattern.length).fill(0)
+        let tableEle = document.getElementById('table')
         let j = 0; // 模式串匹配的下标
         let i = 1;
+        let indexs = new Proxy({
+          j: 0,
+          i: 1
+        }, {
+          set(target, prop, val) {
+            if (prop === 'i') {
+              for (let i = 0; i < val; i++) {
+                tableEle.children[i].style.borderBottom = 'black solid 2px'
+              }
+            } else if (prop === 'j') {
+              for (let i = 0; i <= target.i - val; i++) {
+                tableEle.children[i].style.borderTop = ''
+                tableEle.children[i].style.background = ''
+              }
+              for (let i = 0; i <= val; i++) {
+                tableEle.children[i].style.background = '#CCC'
+              }
+              for (let i = target.i - val; i <= target.i; i++) {
+                tableEle.children[i].style.borderTop = 'red solid 2px'
+              }
+            }
+            target[prop] = val
+          },
+          get(target, prop) {
+            return target[prop]
+          }
+        })
         class Nextor {
           constructor() {
             this.nexts = nexts
-            let tableEle = document.getElementById('table')
             this.tableEle = tableEle
             tableEle.innerHTML = ''
             for (let c of pattern) {
               let div = document.createElement('div')
+              div.className = 'alphabetDiv'
               div.innerHTML = `
                 <div>${c}</div>
                 <div>${0}</div>
@@ -92,7 +168,7 @@
             let children = this.tableEle.children;
             for (let i = 0; i < children.length; i++) {
               let ele = children[i];
-              children[i].style.backgroundColor = (i == j ? GetColor : '');
+              // children[i].style.backgroundColor = (i == j ? GetColor : '');
             }
             if (isSleep) {
               await sleep(500)
@@ -106,23 +182,22 @@
             children[i].style.backgroundColor = 'green'
             children[i].children[1].innerHTML = j
             if (isSleep) {
-              await sleep(500)
+              await sleep(1500)
             }
           }
         }
         let nextor = new Nextor()
-        while (i < pattern.length) {
-          if (pattern[i] == pattern[j]) {
-            await nextor.set(i, j + 1, true)
-            // nexts[i] = j + 1
-            i++
-            j++
+        while (indexs.i < pattern.length) {
+          await sleep(500)
+          if (pattern[indexs.i] == pattern[indexs.j]) {
+            await nextor.set(indexs.i, indexs.j + 1, true)
+            indexs.i++
+            indexs.j++
           } else {
-            // j = nexts[j - 1]
-            j = await nextor.get(j - 1, true)
-            if (!j) {
-              j = 0
-              i++
+            indexs.j = await nextor.get(indexs.j - 1, true)
+            if (!indexs.j) {
+              indexs.j = 0
+              indexs.i ++
             }
             continue
           }
