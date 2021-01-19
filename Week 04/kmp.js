@@ -67,7 +67,8 @@ let nexts = getNexts(pattern)
 console.log(nexts)
 
 let source = 'cadfaabaaacwwwef'
-
+source = 'abaababcd';
+pattern = 'ababc'
 let result = kmp(source, pattern)
 console.log(result)
 if (result) {

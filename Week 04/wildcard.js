@@ -218,7 +218,7 @@ function kmpMatch(source, reg) {
     //   return false
     // }
     // lastIndex = reg.lastIndex
-    let subResult = kmp(source.silce(lastIndex), subPattern)
+    let subResult = kmp(source.slice(lastIndex), subPattern)
     if (!subResult) {
       return false
     }
