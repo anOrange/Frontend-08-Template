@@ -23,17 +23,20 @@ function kmp (source, pattern) {
           break;
         }
       }
-    } else {
-      // 模式串增加一位
-      j++
     }
 
     // 判断匹配完成
     if (j === pattern.length - 1) {
       return {
-        start: i - j + 1,
-        end: i + 1
+        start: i - j ,
+        end: i
       };
+    }
+
+    
+    if (pattern[j] == source[i] || pattern[j] === '?') {
+      // 模式串增加一位
+      j++
     }
   }
   return null
