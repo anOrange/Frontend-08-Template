@@ -3,10 +3,10 @@
   <title>reactive</title>
   <style></style>
   <body>
-    <div id='dragBox' style="width:100px;height:100px;background-color: red;">
+    <div id='dragBox' style="width:100px;height:100px;background-color:red;">
       普通拖动
     </div>
-    <div class="tests">
+    <div id='contentBox' class="tests">
       text text text text text text text text text text text text 
       text text text text text vtext text text text text text 
       text text text text text text text text text text text text 
@@ -23,7 +23,7 @@
       text text text text text text text text text text text text 
       text text text text text text text text text text text text 
     </div>
-    <div id='rangeBox' style="width:100px;height:100px;background-color: red;display: inline-block;">
+    <div id='rangeBox' style="width:100px;height:100px;background-color:pink;display: inline-block;">
       range拖动
     </div>
     <script>
@@ -56,7 +56,47 @@
       
 
       {
-        document.getElementById('rangeBox')
+        
+        let rangeBox = document.getElementById('rangeBox')
+        let contentBox = document.getElementById('contentBox')
+        let textNode = contentBox.childNodes[0]
+        let ranges = []
+        rangeBox.addEventListener('mousedown', (event) => {
+          
+          let up = (event) => {
+            document.removeEventListener('mouseup', up)
+            document.removeEventListener('mousemove', move)
+          }
+          let move = (event) => {
+            let nearest = getNearest(event.clientX, event.clientY)
+            if (nearest) {
+              nearest.insertNode(rangeBox)
+            }
+          }
+          document.addEventListener('mouseup', up)
+          document.addEventListener('mousemove', move)
+        })
+        for (let i = 0; i < textNode.textContent.length; i++) {
+          let range = document.createRange(textNode)
+          range.setStart(textNode, i)
+          range.setEnd(textNode, i)
+          ranges.push(range)
+        }
+
+        function getNearest(x, y) {
+          let min = Infinity
+          let nearest = null
+          for (let range of ranges) {
+            let rect = range.getBoundingClientRect()
+            let distnce = (rect.x - x) ** 2 + (rect.y - y) ** 2
+            if (distnce < min) {
+              min = distnce
+              nearest = range
+            }
+          }
+          return nearest
+        }
+        document.addEventListener('selectstart', e => e.preventDefault())
       }
 
       
