@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+  <title>reactive</title>
+  <style></style>
+  <body>
+    <div id='dragBox' style="width:100px;height:100px;background-color: red;">
+      普通拖动
+    </div>
+    <div class="tests">
+      text text text text text text text text text text text text 
+      text text text text text vtext text text text text text 
+      text text text text text text text text text text text text 
+      text text text text text text text text text text text text 
+      text text text text text text text text text text text text 
+      text text text text text text text text text text text text 
+      text text text text text text text text text text text text 
+      text text text text text text text text text text text text 
+      text text text text text text text text text text text text 
+      text text text text text text text text text text text text 
+      text text text text text text text text text text text text 
+      text text text text text text text text text text text text 
+      text text text text text text text text text text text text 
+      text text text text text text text text text text text text 
+      text text text text text text text text text text text text 
+    </div>
+    <div id='rangeBox' style="width:100px;height:100px;background-color: red;display: inline-block;">
+      range拖动
+    </div>
+    <script>
+      
+      {
+        let dragBox = document.getElementById('dragBox')
+        let baseX = 0
+        let baseY = 0
+        dragBox.addEventListener('mousedown', (event) => {
+          let startX = event.clientX
+          let startY = event.clientY
+          let diffX = 0
+          let diffY = 0
+          let up = (event) => {
+            baseX = baseX + diffX
+            baseY = baseY + diffY
+            document.removeEventListener('mouseup', up)
+            document.removeEventListener('mousemove', move)
+          }
+          let move = (event) => {
+            diffX = event.clientX - startX
+            diffY = event.clientY - startY
+            console.log(event.clientX, startX)
+            dragBox.style.transform = `translate(${baseX + diffX}px, ${baseY + diffY}px)`
+          }
+          document.addEventListener('mouseup', up)
+          document.addEventListener('mousemove', move)
+        })
+      }
+      
+
+      {
+        document.getElementById('rangeBox')
+      }
+
+      
+
+      function initReactive() {
+        const callbacks = new Map()
+        const reactivities = new Map()  // reactive 缓存
+        const uesReactives = []
+        function reactive(obj) {
+          let proxy = reactivities.get(obj)
+          if (proxy) {
+            return proxy
+          }
+          proxy = new Proxy(obj, {
+            get(target, prop) {
+              let value = Reflect.get(target, prop)
+              uesReactives.push([target, prop])
+              if (typeof value === 'object') {
+                value = reactive(value)
+              }
+              return value
+            },
+            set(target, prop, value) {
+              Reflect.set(target, prop, value)
+              // target[prop] = value
+              let rectivityProps = callbacks.get(obj)
+              if (rectivityProps) {
+                let calls = rectivityProps.get(prop)
+                if (calls) {
+                  for (let callback of calls) {
+                    callback()
+                  }
+                }
+              }
+              return Reflect.get(target, prop)
+            }
+          })
+          reactivities.set(obj, proxy)
+          return proxy
+        }
+        function effect(callback) {
+          uesReactives.length = 0
+          callback() // 立即执行回调方法，获取依赖
+          for (reactivity of uesReactives) {
+            let [obj, prop] = reactivity
+            if (!callbacks.has(obj)) {
+              // 初始化该对象的成员表
+              callbacks.set(obj, new Map())
+            }
+            let objProps = callbacks.get(obj) // 对象下面的成员表
+            if (!objProps.has(prop)) {
+              // 初始化成员下面的回调数组
+              objProps.set(prop, [])
+            }
+            objProps.get(prop).push(callback)
+          }
+        }
+        return {
+          reactive,
+          effect
+        }
+      }
+    </script>
+  </body>
+</html>
