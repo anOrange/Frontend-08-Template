@@ -1,0 +1,81 @@
+<!--
+ * @Description: 
+ * @Author: zhuo.pan
+ * @Date: 2021-02-06 23:28:52
+ * @LastEditTime: 2021-02-07 01:02:59
+ * @LastEditors: zhuo.pan
+-->
+<html>
+  <head>
+    <title>realm</title>
+  </head>
+  <body>
+    <div id="mountNode"></div>
+    <script src="./g6.min.js"></script>
+    <script>
+      console.log(G6.Global.version);
+    </script>
+    <!-- 数据准备 -->
+    <script>
+      // console.log(G6.Global.version);
+      const initData = {
+        // 点集
+        nodes: [
+          {
+            id: 'node1', // 节点的唯一标识
+            x: 100, // 节点横坐标
+            y: 200, // 节点纵坐标
+            label: '起始点', // 节点文本
+          },
+          {
+            id: 'node2',
+            x: 300,
+            y: 200,
+            label: '目标点',
+          },
+        ],
+        // 边集
+        edges: [
+          // 表示一条从 node1 节点连接到 node2 节点的边
+          {
+            source: 'node1', // 起始点 id
+            target: 'node2', // 目标点 id
+            label: '我是连线', // 边的文本
+          },
+        ],
+      };
+    </script>
+    <!-- 图实例化 -->
+    <script>
+      // const initData = { ... }
+      const graph = new G6.Graph({
+        container: 'mountNode', // 指定挂载容器
+        width: 800, // 图的宽度
+        height: 500, // 图的高度
+      });
+    </script>
+
+    <!-- 图的渲染 -->
+    <script>
+      // const initData = { ... }
+      //  const graph = ...
+      graph.data(initData); // 加载数据
+      graph.render(); // 渲染
+    </script>
+
+    <!-- 
+      例子
+      https://antv-g6.gitee.io/zh/docs/manual/tutorial/example
+     -->
+    
+    <script>
+      var iframe = document.createElement('iframe')
+      document.documentElement.appendChild(iframe)
+      iframe.src="javascript:var b = {};"
+      var b1 = iframe.contentWindow.b;
+      var b2 = {};
+      console.log(typeof b1, typeof b2); //object object
+      console.log(b1 instanceof Object, b2 instanceof Object); //false true
+    </script>
+  </body>
+</html>
