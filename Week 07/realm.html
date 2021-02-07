@@ -12,70 +12,186 @@
   <body>
     <div id="mountNode"></div>
     <script src="./g6.min.js"></script>
-    <script>
-      console.log(G6.Global.version);
-    </script>
-    <!-- 数据准备 -->
-    <script>
-      // console.log(G6.Global.version);
-      const initData = {
-        // 点集
-        nodes: [
-          {
-            id: 'node1', // 节点的唯一标识
-            x: 100, // 节点横坐标
-            y: 200, // 节点纵坐标
-            label: '起始点', // 节点文本
-          },
-          {
-            id: 'node2',
-            x: 300,
-            y: 200,
-            label: '目标点',
-          },
-        ],
-        // 边集
-        edges: [
-          // 表示一条从 node1 节点连接到 node2 节点的边
-          {
-            source: 'node1', // 起始点 id
-            target: 'node2', // 目标点 id
-            label: '我是连线', // 边的文本
-          },
-        ],
-      };
-    </script>
-    <!-- 图实例化 -->
-    <script>
-      // const initData = { ... }
-      const graph = new G6.Graph({
-        container: 'mountNode', // 指定挂载容器
-        width: 800, // 图的宽度
-        height: 500, // 图的高度
-      });
-    </script>
-
-    <!-- 图的渲染 -->
-    <script>
-      // const initData = { ... }
-      //  const graph = ...
-      graph.data(initData); // 加载数据
-      graph.render(); // 渲染
-    </script>
-
+    
     <!-- 
       例子
       https://antv-g6.gitee.io/zh/docs/manual/tutorial/example
      -->
     
     <script>
+
+      // 数据构造
+      const initData = {
+        // 点集
+        nodes: [
+          {
+            id: 'realm', // 节点的唯一标识
+            x: 500, // 节点横坐标
+            y: 400, // 节点纵坐标
+            label: 'Realm', // 节点文本
+          }
+        ],
+        // 边集
+        edges: [],
+      };
+
+      // 图实例化
+      const graph = new G6.Graph({
+        container: 'mountNode', // 指定挂载容器
+        width: 800, // 图的宽度
+        height: 600, // 图的高度
+        layout: {
+          type: 'dendrogram', // 布局类型
+          direction: 'LR', // 自左至右布局，可选的有 H / V / LR / RL / TB / BT
+          nodeSep: 50, // 节点之间间距
+          rankSep: 100, // 每个层级之间的间距
+        },
+        // layout: {
+        //   type: 'gForce',
+        //   center: [ 400, 300 ],     // 可选，默认为图的中心
+        //   linkDistance: 50,         // 可选，边长
+        //   nodeStrength: 30,         // 可选
+        //   edgeStrength: 0.1,        // 可选
+        //   nodeSize: 30,             // 可选
+        //   preventOverlap: true,
+        //   onTick: () => {           // 可选
+        //     console.log('ticking');
+        //   },
+        //   onLayoutEnd: () => {      // 可选
+        //     console.log('force layout done');
+        //   },
+        //   workerEnabled: true,      // 可选，开启 web-worker
+        //   gpuEnabled: true          // 可选，开启 GPU 并行计算，G6 4.0 支持
+        // },
+        // layout: {
+        //   type: 'force', // 指定为力导向布局
+        //   preventOverlap: true, // 防止节点重叠
+        //   nodeSize: 40,
+        //   nodeSpacing: 40,
+        // },
+        defaultNode: {
+          size: 40,
+          labelCfg: {
+            style: {
+              fill: '#333',
+            },
+          },
+        },
+        defaultEdge: {
+          labelCfg: {
+            autoRotate: true,
+          },
+        },
+        // layout: {
+        //   type: 'radial',
+        //   center: [ 400, 300 ],     // 可选，默认为图的中心
+        //   linkDistance: 50,         // 可选，边长
+        //   maxIteration: 1000,       // 可选
+        //   focusNode: 'node11',      // 可选
+        //   unitRadius: 100,          // 可选
+        //   preventOverlap: true,     // 可选，必须配合 nodeSize
+        //   nodeSize: 30,             // 可选
+        //   strictRadial: false,       // 可选
+        //   workerEnabled: true       // 可选，开启 web-worker
+        // }
+      });
+
+      // 图的渲染
+      graph.data(initData); // 加载数据
+      graph.render(); // 渲染
+
+      // 生成 realm 列表
       var iframe = document.createElement('iframe')
       document.documentElement.appendChild(iframe)
-      iframe.src="javascript:var b = {};"
-      var b1 = iframe.contentWindow.b;
-      var b2 = {};
-      console.log(typeof b1, typeof b2); //object object
-      console.log(b1 instanceof Object, b2 instanceof Object); //false true
+      var objects = [
+        'new Array()',
+        'new Date()',
+        'new RegExp()',
+        'new Promise(() => {})',
+        // 'new Proxy([], {})', // 这个 instanceof 有点特殊
+        'new Map()',
+        'new WeakMap()',
+        'new Set()',
+        'new WeakSet()',
+        'new Function()',
+        'new Boolean()',
+        'new String()',
+        'new Number()',
+        'new Object()',
+        'new Error()',
+        'new EvalError()',
+        'new RangeError()',
+        'new ReferenceError()',
+        'new SyntaxError()',
+        'new TypeError()',
+        'new URIError()',
+        'new ArrayBuffer()',
+        'new SharedArrayBuffer()',
+        'new DataView(new ArrayBuffer(1))',
+        'new Float32Array(1)',
+        'new Float64Array(1)',
+        'new Int8Array(1)',
+        'new Int16Array(1)',
+        'new Int32Array(1)',
+        'new Uint8Array(1)',
+        'new Uint16Array(1)',
+        'new Uint32Array(1)',
+        'new Uint8ClampedArray(1)',
+      ]
+      let list = []
+      async function run() {
+        for (exp of objects) {
+          try {
+            let name = exp.match(/^new ([a-zA-Z\d]+)\(/)[1]
+            iframe.src=`javascript:var test = ${exp};`
+            await sleep(200)
+            var b1 = iframe.contentWindow.test;
+            var b2 = eval(exp)
+            console.log(name, exp)
+            // console.log(b1)
+            let isRealm = !(b1 instanceof window[name]);
+            console.log(isRealm) // false 
+            console.log(b2 instanceof window[name]); // true
+            if (isRealm) {
+              list.push(name)
+              const nodeId = `node${list.length}`
+              const model = {
+                id: nodeId,
+                weight: 20,
+                x: 400 + Math.random() * 200,
+                y: 300 + Math.random() * 200,
+                label: name,
+              };
+              console.log(nodeId)
+              graph.addItem('node', model);
+              graph.addItem('edge', {
+                source: 'realm', // 起始点 id
+                target: nodeId, // 目标点 id
+                // label: '-', // 边的文本
+                style: {
+                  opacity: 0.6,
+                  lineWidth: 2,
+                  stroke: 'red'
+                }
+              });
+              graph.refresh()
+              graph.fitView();
+            }
+          } catch(err) {
+            console.error(err)
+          }
+        }
+      }
+      run()
+      
+      function sleep(time) {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve()
+          }, time);
+        })
+      }
+
     </script>
   </body>
 </html>
