@@ -38,6 +38,9 @@ function emit(token) {
           name: p,
           value: token.attrs[p]
         })
+        if (p === 'class' || p === 'id') {
+          element[p] = token.attrs[p]
+        }
       }
     }
     computeCSS(element)

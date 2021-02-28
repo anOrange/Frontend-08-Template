@@ -23,6 +23,10 @@ http.createServer((req, res) => {
             display: flex;
             flex-wrap: wrap;
           }
+          div div.block {
+            top: 10px;
+            width: 16px;
+          }
           .block {
             width: 5px;
             height: 5px;
@@ -32,7 +36,11 @@ http.createServer((req, res) => {
         </style>
       </head>
       <body>
-        <div id="map"></div>
+        <div id="map">
+          <div class="block"></div>
+          <div class="block"></div>
+          <div class="block"></div>
+        </div>
         <button onclick="onSaveBtnClick()">save</button>
         <button onclick="onClearClick()">clear</button>
       </body>
