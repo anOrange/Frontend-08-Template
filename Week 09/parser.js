@@ -6,9 +6,62 @@ const EOF = Symbol('EOF');
 
 // 当前处理的token，用于保存处理状态
 var currentToken = null
+var currentAttribute = null
+var currentTextNode = null
+
+let stack = [{
+  type: 'document',
+  children: []
+}]
+
 
 function emit(token) {
   console.log(token)
+  let top = stack[stack.length - 1]
+
+  if (token.type === 'startTag') {
+    let element = {
+      type: 'element',
+      children: [],
+      attributes: []
+    }
+
+    element.tagName = token.tagName
+
+    if (token.attrs) {
+      for (let p in token.attrs) {
+        element.attributes.push({
+          name: p,
+          value: token.attrs[p]
+        })
+      }
+    }
+
+    top.children.push(element)
+    element.parent = top
+
+    if (!top.isSelfClosing) {
+      stack.push(element)
+    }
+
+    currentTextNode = null
+  } else if (token.type === 'endTag') {
+    if (top.tagName !== token.tagName) {
+      throw new Error('tag Start end dosen\'t match')
+    } else {
+      stack.pop()
+    }
+    currentTextNode = null
+  } else if (token.type === 'text') {
+    if (currentTextNode == null) {
+      currentTextNode = {
+        type: 'text',
+        content: ''
+      }
+      top.children.push(currentTextNode)
+    }
+    currentTextNode.content += token.content
+  }
 }
 
 // 等待有效字符
@@ -163,7 +216,10 @@ function beforeAttributeValue(c) {
 
 function doubleQuotedAttributeValue(c) {
   if (c === '\"') {
-    currentToken[currentAttribute.name] = currentAttribute.value
+    if (!currentToken.attrs) {
+      currentToken.attrs = {}
+    }
+    currentToken.attrs[currentAttribute.name] = currentAttribute.value
     return afterQuotedAttributeValue
   } else if (c === '\u0000') {
 
@@ -176,7 +232,10 @@ function doubleQuotedAttributeValue(c) {
 
 function singleQuotedAttributeValue(c) {
   if (c === '\'') {
-    currentToken[currentAttribute.name] = currentAttribute.value
+    if (!currentToken.attrs) {
+      currentToken.attrs = {}
+    }
+    currentToken.attrs[currentAttribute.name] = currentAttribute.value
     return afterQuotedAttributeValue
   } else if (c === '\u0000') {
 
@@ -210,4 +269,5 @@ module.exports.parseHtml = function parseHtml(htmlText) {
     state = state(c);
   }
   state = state(EOF)
+  console.log(stack)
 }
