@@ -1,5 +1,5 @@
 const net = require('net');
-
+const encodeString = require('./string').encodeString
 exports.Request = class Request {
   constructor(options) {
     this.method = options.method || 'GET'
@@ -268,7 +268,8 @@ function trunkedBodyParserStates() {
 
   function readingTrunked(char, config) {
     config.content.push(char)
-    config.length--
+    // 支持utf8字符
+    config.length -= encodeString(char).byteLength
     // console.log(char, config.length)
     if (config.length === 0) {
       return {
