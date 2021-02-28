@@ -2,6 +2,10 @@
  * html parser
  */
 
+const addCSSRules = require('./cssParser').addCSSRules;
+const computeCSS = require('./cssParser').computeCSS;
+const cssRules = require('./cssParser').cssRules;
+
 const EOF = Symbol('EOF');
 
 // 当前处理的token，用于保存处理状态
@@ -16,7 +20,7 @@ let stack = [{
 
 
 function emit(token) {
-  console.log(token)
+  // console.log(token)
   let top = stack[stack.length - 1]
 
   if (token.type === 'startTag') {
@@ -36,7 +40,7 @@ function emit(token) {
         })
       }
     }
-
+    computeCSS(element)
     top.children.push(element)
     element.parent = top
 
@@ -49,6 +53,9 @@ function emit(token) {
     if (top.tagName !== token.tagName) {
       throw new Error('tag Start end dosen\'t match')
     } else {
+      if (top.tagName === 'style') {
+        addCSSRules(top.children[0].content)
+      }
       stack.pop()
     }
     currentTextNode = null
