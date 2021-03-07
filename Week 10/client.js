@@ -24,7 +24,7 @@ void async function () {
   let viewport = images(800, 600)
   // let img1 = images(100, 60)
   // img1.fill(100, 200, 50, 1)
-  viewport.draw(img1, 100, 50)
+  // viewport.draw(img1, 100, 50)
   render(viewport, dom)
 
   viewport.save('viewport.png')

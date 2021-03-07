@@ -292,7 +292,7 @@ function layout(element) {
   flexLines.forEach(function(items) {
     let lineCrossSize = style.alignContent === 'stretch'? 
         items.crossSpace + crossSpace / flexLines.length :
-        item.crossSpace
+        items.crossSpace
     for (let i = 0; i < items.length; i++) {
       let item = items[i]
       let itemStyle = getStyle(item)
@@ -315,7 +315,8 @@ function layout(element) {
 
       if (align === 'stretch') {
         itemStyle[crossStart] = crossBase
-        itemStyle[crossEnd] = crossBase + crossSign * ((itemStyle[crossSize] !== null && itemStyle[crossSize] === 'auto') || 0)
+        itemStyle[crossEnd] = crossBase + crossSign * ((itemStyle[crossSize] !== null && itemStyle[crossSize] === (void 0)) ? 
+        itemStyle[crossSize] : lineCrossSize)
         itemStyle[crossSize] = crossSign * (itemStyle[crossEnd] - itemStyle[crossStart])
       }
     }

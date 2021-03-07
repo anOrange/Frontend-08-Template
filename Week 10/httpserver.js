@@ -20,6 +20,7 @@ http.createServer((req, res) => {
           .main {
             display: flex;
             width: 200px;
+            height: 400px;
             flex-wrap: wrap;
           }
           .block1 {
