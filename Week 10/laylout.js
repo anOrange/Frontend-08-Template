@@ -165,7 +165,7 @@ function layout(element) {
   }
   flexLine.mainSpace = mainSpace
 
-  console.log(items)
+  // console.log(items)
 
   if (style.flexWrap === 'nowrap' || isAutoMainSize) {
     flexLine.crossSpace = (style[crossSize] !== undefined) ? style[crossSize] : crossSpace
@@ -322,7 +322,7 @@ function layout(element) {
     crossBase += crossSign * (lineCrossSize + step)
   })
 
-  console.log(items)
+  // console.log(items)
 }
 
 

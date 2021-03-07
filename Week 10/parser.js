@@ -281,4 +281,5 @@ module.exports.parseHtml = function parseHtml(htmlText) {
   }
   state = state(EOF)
   console.log(stack)
+  return stack[0]
 }

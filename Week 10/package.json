@@ -4,7 +4,8 @@
   "description": "",
   "main": "client.js",
   "dependencies": {
-    "css": "^3.0.0"
+    "css": "^3.0.0",
+    "images": "^3.2.3"
   },
   "devDependencies": {},
   "scripts": {

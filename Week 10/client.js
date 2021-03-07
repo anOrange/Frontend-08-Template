@@ -1,5 +1,7 @@
 const Request = require('./request').Request
 const parser = require('./parser')
+const render = require('./render')
+const images = require('images')
 
 void async function () {
   let request = new Request({
@@ -19,4 +21,11 @@ void async function () {
 
   console.log(response)
   let dom = parser.parseHtml(response.body)
+  let viewport = images(800, 600)
+  // let img1 = images(100, 60)
+  // img1.fill(100, 200, 50, 1)
+  viewport.draw(img1, 100, 50)
+  render(viewport, dom)
+
+  viewport.save('viewport.png')
 }()

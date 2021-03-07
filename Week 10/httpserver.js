@@ -25,17 +25,17 @@ http.createServer((req, res) => {
           .block1 {
             width: 100px;
             height: 50px;
-            background: #CCCCCC;
+            background-color: rgb(0, 100, 50);
           }
           .block2 {
             width: 80px;
             height: 80px;
-            background: #CC02C2;
+            background-color: rgb(100, 50, 150);
           }
           .block3 {
             width: 150px;
             height: 60px;
-            background: #00E2C2;
+            background-color: rgb(200, 150, 50);
           }
         </style>
       </head>
