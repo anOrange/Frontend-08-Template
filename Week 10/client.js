@@ -18,6 +18,5 @@ void async function () {
   let response = await request.send()
 
   console.log(response)
-  debugger
   let dom = parser.parseHtml(response.body)
 }()

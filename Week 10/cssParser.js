@@ -79,7 +79,7 @@ function match(element, selectorStr) {
     return false
   }
 
-  let selectorSplit = selectorStr.match(/([\.#]?[a-zA-Z\-]+)/g)
+  let selectorSplit = selectorStr.match(/([\.#]?[a-zA-Z\-0-9]+)/g)
   for (let selector of selectorSplit) {
     if (selector.charAt(0) == '#') {
       let attr = element.attributes.filter(attr => attr.name === 'id')[0]

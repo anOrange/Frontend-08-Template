@@ -17,19 +17,33 @@ http.createServer((req, res) => {
       <head>
         <title>flex</title>
         <style type="text/css">
-          .block {
-            width: 5px;
-            height: 5px;
-            background: #CCC;
-            border: 1px seashell solid;
+          .main {
+            display: flex;
+            width: 200px;
+            flex-wrap: wrap;
+          }
+          .block1 {
+            width: 100px;
+            height: 50px;
+            background: #CCCCCC;
+          }
+          .block2 {
+            width: 80px;
+            height: 80px;
+            background: #CC02C2;
+          }
+          .block3 {
+            width: 150px;
+            height: 60px;
+            background: #00E2C2;
           }
         </style>
       </head>
       <body>
-        <div style="main">
-          <div class="block"></div>
-          <div class="block"></div>
-          <div class="block"></div>
+        <div class="main">
+          <div class="block1"></div>
+          <div class="block2"></div>
+          <div class="block3"></div>
         </div>
       </body>
     </html>

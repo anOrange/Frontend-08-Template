@@ -59,9 +59,7 @@ function emit(token) {
       if (top.tagName === 'style') {
         addCSSRules(top.children[0].content)
       }
-      debugger
       layout(top)
-      debugger
       stack.pop()
     }
     currentTextNode = null
