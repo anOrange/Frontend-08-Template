@@ -152,12 +152,12 @@ function layout(element) {
         flexLine.crossSpace = crossSpace
         flexLine = [item]
         flexLines.push(flexLine)
-        mainSpace = style[mainSign]
+        mainSpace = style[mainSize]
         crossSpace = 0
       } else {
         flexLine.push(item)
       }
-      if (itemStyle[crossSize] !== null && itemStyle[crossSize] === 'auto') {
+      if (itemStyle[crossSize] !== null && itemStyle[crossSize] !== (void 0)) {
         crossSpace = Math.max(crossSpace, itemStyle[crossSize])
         mainSpace -= itemStyle[mainSize]
       }
@@ -220,8 +220,7 @@ function layout(element) {
         if (style.justifyContent === 'flex-start') {
           var currentMain = mainBase
           var step = 0
-        }
-        if (style.justifyContent === 'flex-end') {
+        } else if (style.justifyContent === 'flex-end') {
           var currentMain = mainSpace * mainSign + mainBase
           var step = 0
         } else if (style.justifyContent === 'space-between') {
@@ -272,20 +271,16 @@ function layout(element) {
   if (style.alignContent === 'flex-end') {
     crossBase += crossSign * crossSpace
     step = 0
-  }
-  if (style.alignContent === 'center') {
+  } else if (style.alignContent === 'center') {
     crossBase += crossSign * crossSpace / 2
     step = 0
-  }
-  if (style.alignContent === 'space-between') {
+  } else if (style.alignContent === 'space-between') {
     crossBase += 0
     step = crossSpace / (flexLines.length - 1)
-  }
-  if (style.alignContent === 'space-around') {
+  } else if (style.alignContent === 'space-around') {
     step = crossSpace / flexLines.length
     crossBase += crossSign * step / 2
-  }
-  if (style.alignContent === 'stretch') {
+  } else if (style.alignContent === 'stretch') {
     crossBase += 0
     step = 0
   }
