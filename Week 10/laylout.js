@@ -267,8 +267,7 @@ function layout(element) {
   if (style.alignContent === 'flex-start') {
     crossBase += 0
     step = 0
-  }
-  if (style.alignContent === 'flex-end') {
+  } else if (style.alignContent === 'flex-end') {
     crossBase += crossSign * crossSpace
     step = 0
   } else if (style.alignContent === 'center') {
