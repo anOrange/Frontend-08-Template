@@ -337,8 +337,14 @@ function getStyle(element) {
     if (element.style[prop].toString().match(/^[0-9\.]+/)) {
       element.style[prop] = parseInt(element.style[prop])
     }
+    let newProp = prop.replace(/\-([a-z])/, (match, $1) => {
+      return $1.toUpperCase()
+    })
+    if (newProp) {
+      element.style[newProp] = element.style[prop]
+    }
+    
   }
-  element.style['flexWrap'] = element.style['flex-wrap']
   return element.style
 }
 
