@@ -298,17 +298,13 @@ function layout(element) {
       if (align === 'flex-start') {
         itemStyle[crossStart] = crossBase
         itemStyle[crossEnd] = itemStyle[crossEnd] + crossSign * itemStyle[crossSize]
-      }
-      if (align === 'flex-end') {
+      } else if  (align === 'flex-end') {
         itemStyle[crossEnd] = crossBase + crossSign * lineCrossSize
         itemStyle[crossEnd] = itemStyle[crossEnd] - crossSign * itemStyle[crossSize]
-      }
-      if (align === 'center') {
+      } else if (align === 'center') {
         itemStyle[crossStart] = crossBase + crossSign * (lineCrossSize - itemStyle[crossSize]) / 2
         itemStyle[crossEnd] = itemStyle[crossEnd] + crossSign * itemStyle[crossSize]
-      }
-
-      if (align === 'stretch') {
+      } else if (align === 'stretch') {
         itemStyle[crossStart] = crossBase
         itemStyle[crossEnd] = crossBase + crossSign * ((itemStyle[crossSize] !== null && itemStyle[crossSize] === (void 0)) ? 
         itemStyle[crossSize] : lineCrossSize)
@@ -342,6 +338,7 @@ function getStyle(element) {
       element.style[prop] = parseInt(element.style[prop])
     }
   }
+  element.style['flexWrap'] = element.style['flex-wrap']
   return element.style
 }
 
