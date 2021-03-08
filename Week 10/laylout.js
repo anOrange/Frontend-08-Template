@@ -305,7 +305,7 @@ function layout(element) {
         itemStyle[crossEnd] = itemStyle[crossEnd] + crossSign * itemStyle[crossSize]
       } else if (align === 'stretch') {
         itemStyle[crossStart] = crossBase
-        itemStyle[crossEnd] = crossBase + crossSign * ((itemStyle[crossSize] !== null && itemStyle[crossSize] === (void 0)) ? 
+        itemStyle[crossEnd] = crossBase + crossSign * ((itemStyle[crossSize] !== null && itemStyle[crossSize] !== (void 0)) ? 
         itemStyle[crossSize] : lineCrossSize)
         itemStyle[crossSize] = crossSign * (itemStyle[crossEnd] - itemStyle[crossStart])
       }
