@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>尝试匹配</title>
+    <style type="text/css">
+      * {
+        padding: 10px;
+      }
+      .table {
+        width: 500px;
+        height: 800px;
+        background-color: wheat;
+      }
+      .df {
+        display: flex;
+      }
+      .alphabet {
+        width: 30px;
+        height: 30px;
+        border: 2px rosybrown solid;
+        text-align: center;
+      }
+      .content {
+        width: 200px;
+        border: 2px rosybrown solid;
+      }
+      .item {
+        border: 1px blue dashed;
+        width: 180px;
+        height: 80px;
+      }
+      .class {
+        width: 80px;
+        height: 200px;
+        border: 2px rosybrown solid;
+      }
+
+      .finding {
+        border: 16px burlywood dashed;
+        animation: colorful 0.5s infinite cubic-bezier(1,0,0.5,0);
+      }
+      .matching {
+        border: 16px green dashed;
+      }
+
+      @keyframes colorful {
+        0%{
+          border-color: #0f0f0f;
+        }
+        50%{
+          border-color: #ff0000;
+        }
+        100%{
+          border-color: #0fffcf;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class='table'>
+      table
+      <div class='alphabet'>
+        alphabet
+      </div>
+      <div class='content'>
+        <div id='id' class='class'>
+          class
+        </div>
+        <div class='item'>item</div>
+      </div>
+      <div class='item'>item</div>
+    </div>
+    <script type='text/javascript' src='./css_selector_match.js'></script>
+    <script type='text/javascript'>
+      match("div.table #id.class", document.getElementById("id")).then(result => {
+        console.debug('匹配结果', result)
+        setTimeout(() => {
+          alert('匹配结果:' + result)
+        });
+      }).catch(err => {
+        console.error(err);
+      });
+    </script>
+    <!-- <script type='module'>
+      import { match } from './css_selector_match.js'
+      match("div #id.class", document.getElementById("id")).then(result => {
+        console.debug('匹配结果', result)
+        alert('匹配结果:' + result)
+      }).catch(err => {
+        console.error(err);
+      });
+      
+    </script> -->
+
+  </body>
+</html>
