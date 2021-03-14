@@ -16,6 +16,16 @@
 * 从使用的功能性上面想，好像 first-line 使用 float 属性，好像没有特别打的用处。而 first-letter 可以做文字环绕，用得比较多。
 
 ## 查资料
+
+看到 blink 的代码中，FirstLetterPseudoElement 继承自 PseudoElement，::fisrt-line 只是 line_info 中命名为的 is_first_line_ 的私有属性(同时还有is_last_line_)，可以通过 bool IsFirstLine() const 来获取。去普通行相比，::first-line 在计算样式时，根据这一属性来区别来生成 ComputedStyle。  
+
+可以看出，伪元素 ::first-letter 是当做一个dom来处理的，而 ::fisrt-line 只是在 layout 里，有特殊标记，处理文本时给予特殊处理。  
+
+设想，如果将当做 ::first-line 当做一个脱离文档流的 dom 来参与布局。随着样式的改变，文字就会在两个不同的 dom 之间穿梭，dom 的结构就很改变。而 ::first-letter 本身就选择了首字母，就不会出现这个问题。
+
+[line_info.h](https://github.com/chromium/chromium/blob/99314be8152e688bafbbf9a615536bdbb289ea87/third_party/blink/renderer/core/layout/line/line_info.h)
+[first_letter_pseudo_element.cc](https://github.com/chromium/chromium/blob/99314be8152e688bafbbf9a615536bdbb289ea87/third_party/blink/renderer/core/dom/first_letter_pseudo_element.cc)
+[line_width.cc](https://github.com/chromium/chromium/blob/99314be8152e688bafbbf9a615536bdbb289ea87/third_party/blink/renderer/core/layout/line/line_width.cc)
+[layout_text_fragment.cc]https://github.com/chromium/chromium/blob/99314be8152e688bafbbf9a615536bdbb289ea87/third_party/blink/renderer/core/layout/layout_text_fragment.cc
 [:first-line in the CSS3 spec](https://www.w3.org/TR/selectors-3/#first-line)
 [:first-line in the CSS2.1 spec](https://www.w3.org/TR/CSS2/selector.html#first-line-pseudo)
-[代码]https://github.com/chromium/chromium/blob/99314be8152e688bafbbf9a615536bdbb289ea87/third_party/blink/renderer/core/layout/layout_text_fragment.cc
