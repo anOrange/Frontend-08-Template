@@ -1,0 +1,66 @@
+<script>
+  let names = Object.getOwnPropertyNames(window);
+
+
+  // javascript
+  {
+    let js = new Set();
+    let objects = ["globalThis", "console", "BigInt", "BigInt64Array", "BigUint64Array", "Infinity", "NaN", "undefined", "eval", "isFinite", "isNaN", "parseFloat", "parseInt", "decodeURI", "decodeURIComponent", "encodeURI", "encodeURIComponent", "Array", "Date", "RegExp", "Promise", "Proxy", "Map", "WeakMap", "Set", "WeakSet", "Function", "Boolean", "String", "Number", "Symbol", "Object", "Error", "EvalError", "RangeError", "ReferenceError", "SyntaxError", "TypeError", "URIError", "ArrayBuffer", "SharedArrayBuffer", "DataView", "Float32Array", "Float64Array", "Int8Array", "Int16Array", "Int32Array", "Uint8Array", "Uint16Array", "Uint32Array", "Uint8ClampedArray", "Atomics", "JSON", "Math", "Reflect", "escape", "unescape"]
+    objects.forEach(o => js.add(o));
+    names = names.filter(e => !js.has(e));
+  }
+
+  // Node
+  names = names.filter(e => {
+    try {
+      return !(window[e].prototype instanceof Node)
+    } catch (err) {
+      return true;
+    }
+  }).filter(e => e != "Node");
+
+  // events
+  names = names.filter(e => !e.match(/^on/))
+
+  // webkit private
+  names = names.filter(e => !e.match(/^(webkit|WebKit)/))
+
+  // ECMAScript Internationalization API
+  // https://tc39.es/ecma402/#intl-object
+  {
+    let js = new Set();
+    let objects = ["Intl"]
+    objects.forEach(o => js.add(o));
+    names = names.filter(e => !js.has(e));
+  }
+
+  // Document Object Model XPath
+  // https://www.w3.org/TR/DOM-Level-3-XPath/xpath.html#Interfaces
+  names = names.filter(e => !e.match(/^XPath/))
+
+  
+  // WebGl
+  // https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API
+  // https://www.khronos.org/registry/webgl/specs/latest/1.0/
+  // https://www.khronos.org/registry/OpenGL-Refpages/es2.0/xhtml/
+  {
+    let webgl = new Set();
+    let objects = ['WebGLRenderingContext', 'WebGL2RenderingContext', 'WebGLActiveInfo', 'WebGLBuffer', 'WebGLContextEvent', 'WebGLFramebuffer', 'WebGLProgram', 'WebGLQuery', 'WebGLRenderbuffer', 'WebGLSampler', 'WebGLShader', 'WebGLShaderPrecisionFormat', 'WebGLSync', 'WebGLTexture', 'WebGLTransformFeedback', 'WebGLUniformLocation', 'WebGLVertexArrayObject']
+    objects.forEach(o => webgl.add(o));
+    names = names.filter(e => !webgl.has(e));
+  }
+
+  // http://html.spec.whatwg.org/#/window
+  // 
+
+
+  // XMLSerializer
+  // https://w3c.github.io/DOM-Parsing/#the-xmlserializer-interface
+  names = names.filter(e => e != 'XMLSerializer')
+
+
+  console.log(names)
+
+
+
+</script>
