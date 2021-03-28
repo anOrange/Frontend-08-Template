@@ -43,6 +43,7 @@
   // https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API
   // https://www.khronos.org/registry/webgl/specs/latest/1.0/
   // https://www.khronos.org/registry/OpenGL-Refpages/es2.0/xhtml/
+  // https://www.khronos.org/registry/webgl/specs/latest/2.0/
   {
     let webgl = new Set();
     let objects = ['WebGLRenderingContext', 'WebGL2RenderingContext', 'WebGLActiveInfo', 'WebGLBuffer', 'WebGLContextEvent', 'WebGLFramebuffer', 'WebGLProgram', 'WebGLQuery', 'WebGLRenderbuffer', 'WebGLSampler', 'WebGLShader', 'WebGLShaderPrecisionFormat', 'WebGLSync', 'WebGLTexture', 'WebGLTransformFeedback', 'WebGLUniformLocation', 'WebGLVertexArrayObject']
@@ -50,14 +51,86 @@
     names = names.filter(e => !webgl.has(e));
   }
 
-  // http://html.spec.whatwg.org/#/window
-  // 
+  // XMLHttpRequest
+  // https://xhr.spec.whatwg.org/
+  {
+    let js = new Set();
+    let objects = ['ProgressEvent', 'FormData', 'XMLHttpRequest', 'XMLHttpRequestUpload', 'XMLHttpRequestResponseType', 'XMLHttpRequestEventTarget']
+    objects.forEach(o => js.add(o));
+    names = names.filter(e => !js.has(e)); 
+  }
 
+  // https://streams.spec.whatwg.org/
+  {
+    let js = new Set();
+    let objects = ["ReadableStream", "ReadableStreamGenericReader", "ReadableStreamDefaultReader", "ReadableStreamBYOBReader", "ReadableStreamDefaultController", "ReadableByteStreamController", "ReadableStreamBYOBRequest", "WritableStream", "WritableStreamDefaultWriter", "WritableStreamDefaultController", "TransformStream", "TransformStreamDefaultController", "ByteLengthQueuingStrategy", "CountQueuingStrategy"]
+    objects.forEach(o => js.add(o));
+    names = names.filter(e => !js.has(e)); 
+  }
+
+  // webRTC
+  // https://w3c.github.io/webrtc-pc/ 
+  names = names.filter(e => !e.match(/^RTC/))
+
+  // 浏览器
+  // https://developer.mozilla.org/en-US/docs/Web/API/Element_timing_API
+  names = names.filter(e => !e.match(/^Performance/))
+
+  //https://html.spec.whatwg.org/
+  {
+    let interfaces = new Set();
+    objects = ["AudioTrack","AudioTrackList","BarProp","BeforeUnloadEvent","BroadcastChannel","CanvasGradient","CanvasPattern","CanvasRenderingContext2D","CloseEvent","CustomElementRegistry","DOMParser","DOMStringList","DOMStringMap","DataTransfer","DataTransferItem","DataTransferItemList","DedicatedWorkerGlobalScope","Document","DragEvent","ElementInternals","ErrorEvent","EventSource","External","FormDataEvent","HTMLAllCollection","HTMLAnchorElement","HTMLAreaElement","HTMLAudioElement","HTMLBRElement","HTMLBaseElement","HTMLBodyElement","HTMLButtonElement","HTMLCanvasElement","HTMLDListElement","HTMLDataElement","HTMLDataListElement","HTMLDetailsElement","HTMLDialogElement","HTMLDirectoryElement","HTMLDivElement","HTMLElement","HTMLEmbedElement","HTMLFieldSetElement","HTMLFontElement","HTMLFormControlsCollection","HTMLFormElement","HTMLFrameElement","HTMLFrameSetElement","HTMLHRElement","HTMLHeadElement","HTMLHeadingElement","HTMLHtmlElement","HTMLIFrameElement","HTMLImageElement","HTMLInputElement","HTMLLIElement","HTMLLabelElement","HTMLLegendElement","HTMLLinkElement","HTMLMapElement","HTMLMarqueeElement","HTMLMediaElement","HTMLMenuElement","HTMLMetaElement","HTMLMeterElement","HTMLModElement","HTMLOListElement","HTMLObjectElement","HTMLOptGroupElement","HTMLOptionElement","HTMLOptionsCollection","HTMLOutputElement","HTMLParagraphElement","HTMLParamElement","HTMLPictureElement","HTMLPreElement","HTMLProgressElement","HTMLQuoteElement","HTMLScriptElement","HTMLSelectElement","HTMLSlotElement","HTMLSourceElement","HTMLSpanElement","HTMLStyleElement","HTMLTableCaptionElement","HTMLTableCellElement","HTMLTableColElement","HTMLTableElement","HTMLTableRowElement","HTMLTableSectionElement","HTMLTemplateElement","HTMLTextAreaElement","HTMLTimeElement","HTMLTitleElement","HTMLTrackElement","HTMLUListElement","HTMLUnknownElement","HTMLVideoElement","HashChangeEvent","History","ImageBitmap","ImageBitmapRenderingContext","ImageData","Location","MediaError","MessageChannel","MessageEvent","MessagePort","MimeType","MimeTypeArray","Navigator","OffscreenCanvas","OffscreenCanvasRenderingContext2D","PageTransitionEvent","Path2D","Plugin","PluginArray","PopStateEvent","PromiseRejectionEvent","RadioNodeList","SharedWorker","SharedWorkerGlobalScope","Storage","StorageEvent","SubmitEvent","TextMetrics","TextTrack","TextTrackCue","TextTrackCueList","TextTrackList","TimeRanges","TrackEvent","ValidityState","VideoTrack","VideoTrackList","WebSocket","Window","Worker","WorkerGlobalScope","WorkerLocation","WorkerNavigator","Worklet","WorkletGlobalScope",
+    ]
+    objects.forEach(o => interfaces.add(o))
+    names = names.filter(e => !interfaces.has(e));
+  }
+
+  //https://www.w3.org/TR/webaudio
+  {
+    let webaudio = new Set();
+    objects = ["BaseAudioContext", "AudioContext", "offlineAudioContext", "AudioBuffer", "AudioNode", "AudioParam", "AudioScheduledSourceNode", "AnalyserNode", "AudioBuffSourceNode", "AudioDestinationNode", "AudioListener", "AudioProcessingEvent", "BiquadFilterNode", "ChannelMergerNode", "ChannelSplitterNode", "ConstantSourceNode", "ConvolverNode", "DelayNode", "DynamicsCompressorNode", "GainNode", "IIRFilterNode", "MediaElementAudioSourceNode", "MediaStreamAudioDestinationNode", "MediaStreamAudioSourceNode", "MediaStreamTrackAudioSourceNode", "OscillatorNode", "PannerNode", "PeriodicWave", "ScriptProcessorNode", "StereoPannerNode", "WaveShaperNode", "AudioWorklet"]
+    objects.forEach(o => webaudio.add(o))
+    names = names.filter(e => !webaudio.has(e));
+  }
+
+  // SVG
+  // https://www.w3.org/TR/SVG11/linking.html#DOMInterfaces
+  // https://svgwg.org/svg2-draft/types.html#InterfaceSVGElement
+  names = names.filter(e => !e.match(/^SVG/))
 
   // XMLSerializer
   // https://w3c.github.io/DOM-Parsing/#the-xmlserializer-interface
   names = names.filter(e => e != 'XMLSerializer')
 
+  // web-midi-api
+  // https://webaudio.github.io/web-midi-api/#midiinputmap-interface
+  /**
+   * MIDIOptions Dictionary
+4.4MIDIInputMap Interface
+4.5MIDIOutputMap Interface
+4.6MIDIAccess Interface
+4.7MIDIPort Interface
+4.7.1MIDIInput Interface
+4.7.2MIDIOutput Interface
+4.7.3MIDIPortType Enum
+4.7.4MIDIPortDeviceState Enum
+4.7.5MIDIPortConnectionState Enum
+4.8MIDIMessageEvent Interface
+4.8.1MIDIMessageEventInit Dictionary
+4.9MIDIConnectionEvent Interface
+4.9.1MIDIConnectionEventInit Dictionary
+*/
+  names = names.filter(e => !e.match(/^MIDI/))
+
+  // IndexedDB/
+  // https://www.w3.org/TR/IndexedDB/
+  {
+    let idb = new Set();
+    objects = ["IDBRequest", "IDBFactory", "IDBDatabase", "IDBObjectStore", "IDBIndex", "IDBKeyRange", "IDBCursor", "IDBTransaction"]
+    objects.forEach(o => idb.add(o))
+    names = names.filter(e => !idb.has(e));
+  }
+  
 
   console.log(names)
 
