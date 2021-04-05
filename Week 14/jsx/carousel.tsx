@@ -23,39 +23,45 @@ export default class Carousel extends BaseComponent {
       })
       const move = (e) => {
         const distance = startX - e.clientX
-        // children.forEach((child: HTMLElement) => {
-        //   child.style.transform = `translateX(${-distance - this.position}px)`
-        // })
-        // const offsetX = this.position - (curIndex * width)
         const offsetX = this.position % 500
-        console.log('offsetX', offsetX)
         children[preIndex].style.transform = `translateX(${-(preIndex * width) - distance - width - offsetX }px)`
         children[curIndex].style.transform = `translateX(${-(curIndex * width) - distance - offsetX }px)`
         children[nextIndex].style.transform = `translateX(${-(nextIndex * width) - distance + width - offsetX }px)`
-        // console.log(-distance, - this.position)
       }
       const up = (e) => {
         const distance = startX - e.clientX
         document.removeEventListener('mouseup', up)
         document.removeEventListener('mousemove', move)
-        children.forEach((child: HTMLElement) => {
-          child.style.transition = ''
-        })
         this.position = distance + this.position
+        // 计算进的索引
+        const curIndex_n = (Math.round(this.position / width) + children.length) % children.length
+        const preIndex_n = (curIndex_n - 1 + children.length) % children.length
+        const nextIndex_n = (curIndex_n + 1 + children.length) % children.length
+
+        // children.forEach((child: HTMLElement) => {
+        //   child.style.transition = ''
+        // })
+        const arr = [curIndex, preIndex, nextIndex]
+        console.log('arr', arr)
+        arr.forEach(index => {
+          children[index].style.transition = ''
+        })
+        
         setTimeout(() => {
-          const curIndex = (Math.round(this.position / width) + children.length) % children.length
-          this.position = curIndex * width
-          console.log('curIndex', curIndex, this.position)
-          children.forEach((child: HTMLElement) => {
-            child.style.transform = `translateX(${-this.position}px)`
-          })
-          // children[preIndex].style.transform = `translateX(${-(preIndex * width) - width }px)`
-          // children[curIndex].style.transform = `translateX(${-(curIndex * width)}px)`
-          // children[nextIndex].style.transform = `translateX(${-(nextIndex * width) + width }px)`
+          this.position = curIndex_n * width
+          children[preIndex_n].style.transform = `translateX(${-(preIndex_n * width) - width }px)`
+          children[curIndex_n].style.transform = `translateX(${-(curIndex_n * width)}px)`
+          children[nextIndex_n].style.transform = `translateX(${-(nextIndex_n * width) + width }px)`
+          // setTimeout(() => {
+          //   children.forEach((child: HTMLElement) => {
+          //     child.style.transition = ''
+          //   })
+          // }, 16);
         }, 16);
       }
       document.addEventListener('mousemove', move)
       document.addEventListener('mouseup', up)
+      move(e)
     })
   }
 
