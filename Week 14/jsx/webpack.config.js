@@ -4,6 +4,7 @@ module.exports = {
   module: {
     rules: [{
       test: /\.js$/,
+      exclude: /node_modules/,
       use: {
         loader: 'babel-loader',
         options: {
@@ -13,6 +14,7 @@ module.exports = {
       }
     }, {
       test: /\.(ts|tsx)$/,
+      exclude: /node_modules/,
       use: {
         loader: 'ts-loader',
       }

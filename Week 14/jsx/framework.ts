@@ -11,10 +11,12 @@ namespace Week14 {
     setAttribute(attr: string, value: string) : void
     appendChild(child: ComponentInterface) : void
     render() : HTMLElement | Text
+
+    // didMounted?() : void
   }
 }
 
-export function createElement(type: string | Week14.ComponentConstructor, attribute?: Record<string, string>, ...children: Array<Week14.ComponentInterface>) {
+export function createElement(type: string | Week14.ComponentConstructor, attribute?: Record<string, string>, ...children: Array<Week14.ComponentInterface> | Array<Array<Week14.ComponentInterface>>) {
   if (!type) {
     return null
   }
@@ -29,11 +31,18 @@ export function createElement(type: string | Week14.ComponentConstructor, attrib
     element.setAttribute(attr, attribute[attr])
   }
 
-  for (let child of children) {
-    if (typeof child === 'string') {
-      child = new TextWrapper(child)
+  const appendChild = (children: Array<Week14.ComponentInterface>) => {
+    for (let child of children) {
+      if (typeof child === 'string') {
+        child = new TextWrapper(child)
+      }
+      element.appendChild(child)
     }
-    element.appendChild(child)
+  }
+  if (Array.isArray(children?.[0])) {
+    appendChild(children.flat())
+  } else {
+    appendChild(<Array<Week14.ComponentInterface>>children)
   }
 
   return element
@@ -96,13 +105,24 @@ function createComponent(cmpConstructor: Week14.ComponentConstructor, type?: str
 }
 
 export class BaseComponent implements Week14.ComponentInterface {
-  root: HTMLElement
+  root: HTMLElement | BaseComponent | ElementWrapper
   constructor() {
     this.root = this.render()
   }
 
+
   mountTo(parent: HTMLElement) {
-    parent.appendChild(this.root)
+    if (isComponent(this.root)) {
+      this.root.mountTo(parent)
+      setTimeout(() => {
+        this.didMounted?.()  
+      })
+    } else {
+      parent.appendChild(<HTMLElement>this.root)
+    }
+  }
+  didMounted() {
+    throw new Error("Method not implemented.")
   }
 
   setAttribute(attr: string, value: string) {
@@ -119,3 +139,7 @@ export class BaseComponent implements Week14.ComponentInterface {
 
 }
 
+
+function isComponent(cmp: HTMLElement | Week14.ComponentInterface): cmp is Week14.ComponentInterface {
+  return (<Week14.ComponentInterface>cmp).mountTo !== undefined
+}
