@@ -9,7 +9,7 @@ namespace Week14 {
   export interface ComponentInterface {
     mountTo(parent: HTMLElement) : void
     setAttribute(attr: string, value: string) : void
-    appendChild(child: HTMLElement | Text | ComponentInterface) : void
+    appendChild(child: ComponentInterface) : void
     render() : HTMLElement | Text
   }
 }
@@ -31,7 +31,7 @@ export function createElement(type: string | Week14.ComponentConstructor, attrib
 
   for (let child of children) {
     if (typeof child === 'string') {
-      child = new TextWarpper(child)
+      child = new TextWrapper(child)
     }
     element.appendChild(child)
   }
@@ -59,8 +59,8 @@ export class ElementWrapper implements Week14.ComponentInterface {
   mountTo(parent: HTMLElement) {
     parent.appendChild(this.root)
   }
-  appendChild(child: HTMLElement) {
-    this.mountTo(this.root)
+  appendChild(child: Week14.ComponentInterface) {
+    child.mountTo(this.root)
   }
   render() {
     return document.createElement(this.type)
@@ -68,7 +68,7 @@ export class ElementWrapper implements Week14.ComponentInterface {
 
 }
 
-class TextWarpper implements Week14.ComponentInterface {
+class TextWrapper implements Week14.ComponentInterface {
   root: Text
   content: string
 
@@ -83,7 +83,7 @@ class TextWarpper implements Week14.ComponentInterface {
   mountTo(parent: HTMLElement) {
     parent.appendChild(this.root)
   }
-  appendChild(child: HTMLElement) {
+  appendChild(child: Week14.ComponentInterface) {
     // this.mountTo(this.root)
   }
   render() {
