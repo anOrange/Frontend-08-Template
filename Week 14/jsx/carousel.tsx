@@ -2,19 +2,54 @@ import { BaseComponent, React, ElementWrapper } from './framework.ts'
 
 export default class Carousel extends BaseComponent {
 
+  position: number = 0
+  width = 500
+
   didMounted() {
     const eWarp = this.root as ElementWrapper
     const element: HTMLElement = eWarp.root
+    const children = Array.from(element.children) as Array<HTMLElement>
+
     element.addEventListener('mousedown', (e) => {
+      const width = this.width
+      const startX = e.clientX
       console.log(e.clientX)
-      
+      const curIndex = (Math.round(this.position / width) + children.length) % children.length
+      const preIndex = (curIndex - 1 + children.length) % children.length
+      const nextIndex = (curIndex + 1 + children.length) % children.length
+      console.log('curIndex', curIndex, preIndex, nextIndex)
+      children.forEach((child: HTMLElement) => {
+        child.style.transition = 'none'
+      })
       const move = (e) => {
-        console.log('mousemove', e.clientX)
+        const distance = startX - e.clientX
+        // children.forEach((child: HTMLElement) => {
+        //   child.style.transform = `translateX(${-distance - this.position}px)`
+        // })
+        // const offsetX = this.position - (curIndex * width)
+        const offsetX = this.position % 500
+        console.log('offsetX', offsetX)
+        children[preIndex].style.transform = `translateX(${-(preIndex * width) - distance - width - offsetX }px)`
+        children[curIndex].style.transform = `translateX(${-(curIndex * width) - distance - offsetX }px)`
+        children[nextIndex].style.transform = `translateX(${-(nextIndex * width) - distance + width - offsetX }px)`
+        // console.log(-distance, - this.position)
       }
       const up = (e) => {
-        console.log('mouseup', e.clientX)
+        const distance = startX - e.clientX
         document.removeEventListener('mouseup', up)
         document.removeEventListener('mousemove', move)
+        children.forEach((child: HTMLElement) => {
+          child.style.transition = ''
+        })
+        this.position = distance + this.position
+        setTimeout(() => {
+          const curIndex = (Math.round(this.position / width) + children.length) % children.length
+          this.position = curIndex * width
+          console.log('curIndex', curIndex, this.position)
+          children.forEach((child: HTMLElement) => {
+            child.style.transform = `translateX(${-this.position}px)`
+          })
+        }, 16);
       }
       document.addEventListener('mousemove', move)
       document.addEventListener('mouseup', up)
