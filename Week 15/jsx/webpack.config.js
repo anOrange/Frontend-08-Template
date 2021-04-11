@@ -1,6 +1,15 @@
+const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+
 module.exports = {
-  entry: './main.js',
-  // entey: './gesture.ts',
+  entry: {
+    main: './main.js',
+    animationTest: './animationTest.js'
+  },
+  output: {
+    filename: '[name].js',
+    path: path.resolve(__dirname, 'dist')
+  },
   devtool: 'inline-source-map',
   module: {
     rules: [{
@@ -21,5 +30,12 @@ module.exports = {
       }
     }]
   },
+  plugins: [
+    // new HtmlWebpackPlugin({
+    //   title:'测试',
+    //   filename: '[name].html',
+    //   template: 'main.html',
+    // }),
+  ],
   mode: "development"
 }
