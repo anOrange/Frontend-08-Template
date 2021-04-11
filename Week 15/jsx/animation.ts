@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: zhuo.pan
  * @Date: 2021-04-11 19:27:08
- * @LastEditTime: 2021-04-12 03:36:15
+ * @LastEditTime: 2021-04-12 03:42:23
  * @LastEditors: zhuo.pan
  */
 
@@ -61,7 +61,7 @@ export class Timeline {
           animation.receive(t)
         }
       })
-
+      
       this[TICK_HANDLER] = requestAnimationFrame(this[TICK])
     }
     this[TICK](0)
