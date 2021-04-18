@@ -145,6 +145,13 @@ export class BaseComponent implements Week14.ComponentInterface {
     return this[ATTRIBUTES][attr]
   }
 
+  triggerEvent(type, args){
+    if (!type) {
+      return
+    }
+    this[ATTRIBUTES]['on' + type[0].toUpperCase() + type.slice(1)](new CustomEvent(type, {detail: args}))
+  }
+
   setState(state: string, value: any) {
     this[STATES][state] = value
   }

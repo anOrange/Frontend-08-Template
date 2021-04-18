@@ -20,7 +20,7 @@ namespace GeekCarousel {
 export default class Carousel extends BaseComponent {
 
   // STATES
-  position: number = 0
+  // position: number = 0
 
   // ATTRIBUTES
   ;width = 500
@@ -31,6 +31,7 @@ export default class Carousel extends BaseComponent {
   constructor() {
     super()
     this[kImgList] = []
+    this[STATES].position = 0
   }
 
   didMounted() {
@@ -46,12 +47,12 @@ export default class Carousel extends BaseComponent {
 
     const nextImage = () => {
       animationStartProgress = timeline.getProgress()
-      let nextIndex = (this.position + 1) % imageCount
+      let nextIndex = (this[STATES].position + 1) % imageCount
       timeline.add(new Animation({
-        object: children[this.position].style,
+        object: children[this[STATES].position].style,
         property: "transform",
-        startValue: -this.position * width,
-        endValue: -this.position * width - width,
+        startValue: -this[STATES].position * width,
+        endValue: -this[STATES].position * width - width,
         duration: 500, 
         timingFunction: ease,
         template: (progress) => `translateX(${progress}px)`
@@ -66,7 +67,8 @@ export default class Carousel extends BaseComponent {
         template: (progress) => `translateX(${progress}px)`
       }))
 
-      this.position = nextIndex
+      this[STATES].position = nextIndex
+      this.triggerEvent('change', nextIndex)
     }
     let timeline = new Timeline()
     timeline.start()
@@ -89,7 +91,7 @@ export default class Carousel extends BaseComponent {
       (i++ % 20 === 0 ) && console.log(panX, animationOffsetX)
       const x = panX - animationOffsetX
       const moveIndex = Math.round(-x / width)
-      const curIndex = (this.position + moveIndex % imageCount + imageCount) % imageCount
+      const curIndex = (this[STATES].position + moveIndex % imageCount + imageCount) % imageCount
       const preIndex = (curIndex - 1 + imageCount) % imageCount
       const nextIndex = (curIndex + 1 + imageCount) % imageCount
       children[preIndex].style.transform = `translateX(${-((preIndex - moveIndex) * width) + x - width }px)`
@@ -104,7 +106,7 @@ export default class Carousel extends BaseComponent {
       const panX = event.clientX - event.startX
       
       let x = panX - animationOffsetX
-      const curIndex = (this.position + Math.round(-x / width) % imageCount + imageCount) % imageCount
+      const curIndex = (this[STATES].position + Math.round(-x / width) % imageCount + imageCount) % imageCount
       
       
 
@@ -143,70 +145,13 @@ export default class Carousel extends BaseComponent {
       
       
 
-      this.position = curIndex
-      this[kOnChanged](curIndex)
-
+      this[STATES].position = curIndex
+      this.triggerEvent('change', curIndex)
       this[kIntervalHandle] = setInterval(nextImage, this[kDuration])
     })
     
     this[kIntervalHandle] = setInterval(nextImage, this[kDuration])
     
-
-    /*
-    element.addEventListener('mousedown', (e) => {
-      const width = this.width
-      const startX = e.clientX
-      console.log(e.clientX)
-      const curIndex = (Math.round(this.position / width) + children.length) % children.length
-      const preIndex = (curIndex - 1 + children.length) % children.length
-      const nextIndex = (curIndex + 1 + children.length) % children.length
-      console.log('curIndex', curIndex, preIndex, nextIndex)
-      children.forEach((child: HTMLElement) => {
-        child.style.transition = 'none'
-      })
-      const move = (e) => {
-        const distance = startX - e.clientX
-        const offsetX = this.position % 500
-        children[preIndex].style.transform = `translateX(${-(preIndex * width) - distance - width - offsetX }px)`
-        children[curIndex].style.transform = `translateX(${-(curIndex * width) - distance - offsetX }px)`
-        children[nextIndex].style.transform = `translateX(${-(nextIndex * width) - distance + width - offsetX }px)`
-      }
-      const up = (e) => {
-        const distance = startX - e.clientX
-        document.removeEventListener('mouseup', up)
-        document.removeEventListener('mousemove', move)
-        this.position = distance + this.position
-        // 计算进的索引
-        const curIndex_n = (Math.round(this.position / width) + children.length) % children.length
-        const preIndex_n = (curIndex_n - 1 + children.length) % children.length
-        const nextIndex_n = (curIndex_n + 1 + children.length) % children.length
-
-        // children.forEach((child: HTMLElement) => {
-        //   child.style.transition = ''
-        // })
-        const arr = [curIndex, preIndex, nextIndex]
-        console.log('arr', arr)
-        arr.forEach(index => {
-          children[index].style.transition = ''
-        })
-        
-        setTimeout(() => {
-          this.position = curIndex_n * width
-          children[preIndex_n].style.transform = `translateX(${-(preIndex_n * width) - width }px)`
-          children[curIndex_n].style.transform = `translateX(${-(curIndex_n * width)}px)`
-          children[nextIndex_n].style.transform = `translateX(${-(nextIndex_n * width) + width }px)`
-          // setTimeout(() => {
-          //   children.forEach((child: HTMLElement) => {
-          //     child.style.transition = ''
-          //   })
-          // }, 16);
-        }, 16);
-      }
-      document.addEventListener('mousemove', move)
-      document.addEventListener('mouseup', up)
-      move(e)
-    })
-    */
   }
 
   setDuration(duration: number) {
