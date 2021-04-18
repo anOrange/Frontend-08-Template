@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: zhuo.pan
  * @Date: 2021-04-11 19:27:08
- * @LastEditTime: 2021-04-18 22:58:59
+ * @LastEditTime: 2021-04-19 02:49:31
  * @LastEditors: zhuo.pan
  */
 
@@ -44,10 +44,10 @@ export class Timeline {
     if (this.state !== TimelineState.Inited)
       return
     this.state = TimelineState.Started
-    // const startTime = Date.now()
+    const startTime = Date.now()
     this[PAUSE_TIME] = 0
-    this[TICK] = (time: number) => {
-      this[TIME_PROGRESS] = time - this[PAUSE_TIME]  // 时间进度
+    this[TICK] = () => {
+      this[TIME_PROGRESS] = Date.now() - startTime - this[PAUSE_TIME]  // 时间进度
       this[ANIMATIONS]?.forEach(animation => {
         let t: number = this[TIME_PROGRESS] - this[START_TIME].get(animation) - animation.delay  
         if (animation.duration < t) {
@@ -76,7 +76,7 @@ export class Timeline {
       return
     this.state = TimelineState.Paused
     cancelAnimationFrame(this[TICK_HANDLER])
-    this[PAUSE_START] = Date.now()//记录暂停开始的时间
+    this[PAUSE_START] = Date.now() //记录暂停开始的时间
     // this[PAUSE_TIME] = this[TIME_PROGRESS]
   }
   resume() {
@@ -94,6 +94,7 @@ export class Timeline {
     this[START_TIME] = new Map()
     this[PAUSE_START] = 0
     this[TICK_HANDLER] = null
+    this[TIME_PROGRESS] = 0
   }
   add(animation: Animation, startTime?: number) {
     if (arguments.length < 2) {

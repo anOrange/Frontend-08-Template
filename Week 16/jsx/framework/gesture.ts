@@ -2,13 +2,19 @@
  * @Description: 手势封装，GestureRecognizer
  * @Author: zhuo.pan
  * @Date: 2021-04-11 19:26:54
- * @LastEditTime: 2021-04-18 21:29:36
+ * @LastEditTime: 2021-04-19 03:20:16
  * @LastEditors: zhuo.pan
  */
+// namespace GeekGesture {
+  export type GestureEventType = ListenerContext & Event
+// }
 
 type ListenerContext = Partial<{
   startX?: number
   startY?: number
+
+  clientX?: number
+  clientY?: number
 
   isTap: boolean
   isPan: boolean
@@ -31,6 +37,8 @@ type Point = {
 
 const kMousePre = 'mouse_'
 const kTouchPre = 'touch_'
+
+
 
 export class Listener {
   protected recognizer: Recognizer
@@ -271,12 +279,14 @@ export class Recognizer {
         isFlick: context.isFlick,
       })
     }
+    
     this.dispatcher?.dispatch?.('end', {
       startX: context.startX,
       startY: context.startY,
       clientX: point.clientX,
       clientY: point.clientY,
       isVertical: context.isVertical,
+      velocity: v,
       isFlick: context.isFlick,
     })
   }
@@ -297,7 +307,7 @@ export class Dispatcher {
   }
 
   dispatch(type: string, properties?: any) {
-    const event = new CustomEvent(type)
+    const event: GestureEventType = new CustomEvent<ListenerContext>(type)
     for (const prop in properties) {
       event[prop] = properties[prop]
     }

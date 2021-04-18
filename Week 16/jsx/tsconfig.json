@@ -13,6 +13,10 @@
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
   },
+
+  "include": [
+    "framework/*.ts",
+  ],
   "exclude": [
     "node_modules"
   ]
