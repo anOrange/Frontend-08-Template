@@ -34,6 +34,10 @@ module.exports = class extends YeomanGenerator {
     this.copyTemplate('HelloWorld.vue', './src/HelloWorld.vue')
     this.copyTemplate('webpack.config.js', './webpack.config.js')
     this.copyTemplate('main.js', './src/main.js')
+    // 测试
+    this.copyTemplate('.babelrc', '.babelrc')
+    this.copyTemplate('.nycrc', '.nycrc')
+    this.copyTemplate('sample.test.js', './test/sample.test.js')
 
     const pkgJson = {
       name: options.name,
@@ -41,6 +45,8 @@ module.exports = class extends YeomanGenerator {
       description: options.version,
       main: "main.js",
       scripts: {
+        test: "mocha --require @babel/register",
+        coverage: "nyc mocha",
         build: "webpack"
       },
       dependencies: {
@@ -57,8 +63,13 @@ module.exports = class extends YeomanGenerator {
 
   initNpm() {
     this.npmInstall(['vue-loader@^15.9.6', 'vue-template-compiler', 'webpack@^5',
+      'webpack-cli', 'babel-loader',
       '@vue/compiler-sfc', "html-webpack-plugin@^5.3.1",
+      '@babel/core@^7.14.0', '@babel/preset-env@^7.14.1', '@babel/register@^7.13.16',
+      '@istanbuljs/nyc-config-babel@^3.0.0', 'babel-plugin-istanbul@^6.0.0',
+      'mocha@^8.3.2', 'nyc@^15.1.0'
     ], {'save-dev': true})
+    
   }
 
 }
