@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: zhuo.pan
  * @Date: 2021-05-18 00:36:59
- * @LastEditTime: 2021-05-18 02:42:30
+ * @LastEditTime: 2021-05-18 03:50:38
  * @LastEditors: zhuo.pan
  */
 const http = require('http')
@@ -14,7 +14,10 @@ const https = require('https')
 const PublishFolder = '../server/public/'
 const UploadPackFolder = './workspace/.upload/'
 
-const whileList = ['anOrange', 'TurnerXi']
+/**
+ * 权限白名单
+ */
+const whileList = ['anOrange', 'TurnerXi', 'anOrange7']
 
 if (fs.existsSync('./config.js')) {
   var config = require('./config.js')
@@ -48,8 +51,8 @@ function auth(req, res) {
   let query = querystring.parse(req.url.match(/^\/auth\?([\s\S]+)$/)[1])
   console.log('query', query)
   getToken(query.code, info => {
-    console.log(info)
-    res.write(`<a href="http://localhost:8083/publish?token=${info.access_token}">publish</a>`)
+    console.log('info', info)
+    res.write(`<a href="http://localhost:8083/publish?token=${info.access_token}">publish(token: ${info.access_token})</a>`)
     res.end()
   })
 }
@@ -59,8 +62,10 @@ function auth(req, res) {
  */
 function getToken(code, callback) {
   let request = https.request({
-    hostname: 'github.com',
-    path: `/login/oauth/access_token?code=${code}&client_id=${config.git.clientId}&client_secret=${config.git.clientSecret}`,
+    // hostname: 'github.com',
+    // path: `/login/oauth/access_token?code=${code}&client_id=${config.git.clientId}&client_secret=${config.git.clientSecret}`,
+    hostname: 'gitee.com',
+    path: `/oauth/token?grant_type=authorization_code&code=${code}&client_id=${config.gitee.clientId}&client_secret=${config.gitee.clientSecret}&&redirect_uri=https%3A%2F%2Fgeek.skyvoid.com%2Fpublish%2Fauth`,
     prot: 443,
     method: 'POST',
   }, function(response) {
@@ -69,7 +74,8 @@ function getToken(code, callback) {
       body += chunk.toString()
     }) 
     response.on('end', chunk => {
-      typeof callback === 'function' && callback(querystring.parse(body))
+      console.log('getToken', body)
+      typeof callback === 'function' && callback(JSON.parse(body))
     }) 
   })
   request.end()
@@ -80,8 +86,10 @@ function getToken(code, callback) {
  */
 function getUserInfo(token, callback) {
   let request = https.request({
-    hostname: 'api.github.com',
-    path: `/user`,
+    // hostname: 'api.github.com',
+    // path: `/user`,
+    hostname: 'gitee.com',
+    path: `/api/v5/user?access_token=${token}`,
     prot: 443,
     method: 'GET',
     headers: {

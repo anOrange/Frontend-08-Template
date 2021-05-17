@@ -18,7 +18,10 @@ if (fs.existsSync('./config.js')) {
   process.exit(1)
 }
 
-child_process.exec(`open https://github.com/login/oauth/authorize?client_id=${config.git.clientId}`)
+
+// child_process.exec(`open https://github.com/login/oauth/authorize?client_id=${config.git.clientId}`)
+child_process.exec(`open 'https://gitee.com/oauth/authorize?client_id=${config.gitee.clientId}&redirect_uri=https%3A%2F%2Fgeek.skyvoid.com%2Fpublish%2Fauth&response_type=code'`)
+
 
 
 if (!fs.existsSync(UploadFolder)) {
@@ -59,7 +62,7 @@ function upload(token) {
         hostname: config.hostname,
         port: config.port,
         method: 'POST',
-        path: '/publish?token=' + token,
+        path: '/publish/publish?token=' + token,
         headers: {
           'Content-Type': 'application/octet-stream',
           // 'Content-Length': stat.size
