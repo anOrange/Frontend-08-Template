@@ -7,3 +7,4 @@ npm-debug.log
 .vscode
 .nyc_output
 .upload/
+*/publish-server/config.js
