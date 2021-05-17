@@ -18,10 +18,11 @@ if (fs.existsSync('./config.js')) {
   process.exit(1)
 }
 
-
+/**
+ * github太慢了，切换成 gitee 的
+ */
 // child_process.exec(`open https://github.com/login/oauth/authorize?client_id=${config.git.clientId}`)
 child_process.exec(`open 'https://gitee.com/oauth/authorize?client_id=${config.gitee.clientId}&redirect_uri=https%3A%2F%2Fgeek.skyvoid.com%2Fpublish%2Fauth&response_type=code'`)
-
 
 
 if (!fs.existsSync(UploadFolder)) {
@@ -29,13 +30,15 @@ if (!fs.existsSync(UploadFolder)) {
 }
 
 
-const archive = archiver('zip', {
-  zlib: {
-    level: 9
-  }
-})
-
 function upload(token) {
+  /**
+  * 每次新建一个实例
+  */
+  const archive = archiver('zip', {
+    zlib: {
+      level: 9
+    }
+  })
   return new Promise((resolve, reject) => {
     archive.directory(PublicFolder, false)
     archive.finalize()
@@ -56,7 +59,7 @@ function upload(token) {
       })
     })
   }).then((stat) => {
-    console.log('stats', stat)
+    // console.log('stats', stat)
     return new Promise((resolve, reject) => {
       const request = https.request({
         hostname: config.hostname,
@@ -84,17 +87,26 @@ function upload(token) {
     })
   }, err => {
     console.error('error upload:', err)
+    archive.destroy()
   }).then(res => {
     console.log('upload success')
+    archive.destroy()
   }).catch(err => {
     console.log('error', err)
+    archive.destroy()
   })
 }
 
-// upload(token)
 
 http.createServer((request, response) => {
   let query = querystring.parse(request.url.match(/^\/publish\?([\s\S]+)$/)[1]);
-  upload(query.token);
+  upload(query.token).then(()=>{
+    response.writeHead(200)
+    response.write('<h2>publish success</h2>')
+    response.end()
+  }).catch(err => {
+    response.writeHead(500)
+    response.end(`<h2>publish error：${err.message}</h2>`)
+  });
 }).listen(8083);
 
