@@ -1,7 +1,9 @@
 const http = require('http')
+const https = require('https')
 const fs = require('fs')
 const archiver = require('archiver')
 const child_process = require('child_process')
+const querystring = require('querystring')
 
 const UploadFolder = './workspace/.upload/'
 const UploadFileName = 'publish.zip'
@@ -30,7 +32,7 @@ const archive = archiver('zip', {
   }
 })
 
-function upload() {
+function upload(token) {
   return new Promise((resolve, reject) => {
     archive.directory(PublicFolder, false)
     archive.finalize()
@@ -51,12 +53,13 @@ function upload() {
       })
     })
   }).then((stat) => {
-    console.log('sta', stat)
+    console.log('stats', stat)
     return new Promise((resolve, reject) => {
-      const request = http.request({
-        hostname: '127.0.0.1',
-        port: 3003,
+      const request = https.request({
+        hostname: config.hostname,
+        port: config.port,
         method: 'POST',
+        path: '/publish?token=' + token,
         headers: {
           'Content-Type': 'application/octet-stream',
           // 'Content-Length': stat.size
@@ -81,11 +84,14 @@ function upload() {
   }).then(res => {
     console.log('upload success')
   }).catch(err => {
-    // console.log('error', err)
+    console.log('error', err)
   })
 }
 
-upload()
+// upload(token)
 
-
+http.createServer((request, response) => {
+  let query = querystring.parse(request.url.match(/^\/publish\?([\s\S]+)$/)[1]);
+  upload(query.token);
+}).listen(8083);
 
