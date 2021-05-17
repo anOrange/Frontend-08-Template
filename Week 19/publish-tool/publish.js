@@ -1,6 +1,7 @@
 const http = require('http')
 const fs = require('fs')
 const archiver = require('archiver')
+const child_process = require('child_process')
 
 const UploadFolder = './workspace/.upload/'
 const UploadFileName = 'publish.zip'
@@ -8,9 +9,20 @@ const UploadFile = UploadFolder + UploadFileName
 const PublicFolder = './publish'
 
 
+if (fs.existsSync('./config.js')) {
+  var config = require('./config.js')
+} else {
+  console.error('请拷贝模板 config.js.tpl 到 config.js')
+  process.exit(1)
+}
+
+child_process.exec(`open https://github.com/login/oauth/authorize?client_id=${config.git.clientId}`)
+
+
 if (!fs.existsSync(UploadFolder)) {
   fs.mkdirSync(UploadFolder)
 }
+
 
 const archive = archiver('zip', {
   zlib: {

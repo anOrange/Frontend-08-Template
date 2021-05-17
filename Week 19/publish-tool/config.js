@@ -2,12 +2,12 @@
  * @Description: 配置文件
  * @Author: zhuo.pan
  * @Date: 2021-05-18 00:04:59
- * @LastEditTime: 2021-05-18 00:41:40
+ * @LastEditTime: 2021-05-18 00:58:57
  * @LastEditors: zhuo.pan
  */
 
 module.exports = {
   git: {
-    clientId: '2d7ca91698ba6b904f9ce177e64c3bcec6c1bb1d',
+    clientId: 'Iv1.078e01551a858ba4',
   }
 }

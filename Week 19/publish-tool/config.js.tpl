@@ -8,6 +8,6 @@
 
 module.exports = {
   git: {
-    clientId: '2d7ca91698ba6b904f9ce177e64c3bcec6c1bb1d',
+    clientId: 'Iv1.078e01551a858ba4',
   }
 }
