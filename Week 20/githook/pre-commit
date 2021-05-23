@@ -1,0 +1,38 @@
+#!/usr/bin/env node
+console.log('commit hook')
+
+const process = require("process");
+const child_process = require("child_process");
+const {ESLint} = require("eslint");
+
+function exec(name) {
+    return new Promise(function (resolve) {
+        child_process.exec(name, resolve);
+    });
+}
+
+(async function main() {
+    const eslint = new ESLint({fix: false});
+
+    // 暂存没有被加入暂存区的文件， [-k|--[no-]keep-index]
+    await exec("git stash push -k");
+
+    const results = await eslint.lintFiles(["index.js"]);
+
+    // 弹出暂存区
+    await exec("git stash pop");
+
+    const formatter = await eslint.loadFormatter("stylish");
+    const resultText = formatter.format(results);
+
+    console.log(resultText);
+
+    for (let result of results) {
+        if (result.errorCount) {
+            process.exitCode = 1;
+        }
+    }
+})().catch((error) => {
+    process.exitCode = 1;
+    console.error(error);
+});
